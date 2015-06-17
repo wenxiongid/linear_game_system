@@ -37,24 +37,28 @@ requirejs([
 
     timeline.bind('timeUpdate', function(timeOffset){
       var current_d_offset=timeOffset-last_offset;
+      console.log(current_d_offset);
       myPath.draw(myCharater.speed*current_d_offset);
-      myCharater.action(charaterAction);
       last_offset=timeOffset;
     });
 
     $('#jumpBtn').on('click', function(e){
       if(charaterAction=='normal'){
         charaterAction='air';
+        myCharater.action(charaterAction);
         setTimeout(function(){
           charaterAction='normal';
+          myCharater.action(charaterAction);
         }, 500);
       }
     });
     $('#slideBtn').on('click', function(e){
       if(charaterAction=='normal'){
         charaterAction='ground';
+        myCharater.action(charaterAction);
         setTimeout(function(){
           charaterAction='normal';
+          myCharater.action(charaterAction);
         }, 500);
       }
     });
