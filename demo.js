@@ -33,9 +33,13 @@ requirejs([
       charater.height=h;
     }).trigger('resize');
 
+    var last_offset=0;
+
     timeline.bind('timeUpdate', function(timeOffset){
-      myPath.draw(myCharater.speed);
+      var current_d_offset=timeOffset-last_offset;
+      myPath.draw(myCharater.speed*current_d_offset);
       myCharater.action(charaterAction);
+      last_offset=timeOffset;
     });
 
     $('#jumpBtn').on('click', function(e){

@@ -10,12 +10,12 @@ define([
     _this.canvas=canvas;
     _this.ctx=_this.canvas.getContext('2d');
     _this.line='normal';
-    _this.speed=5;
+    _this.speed=0.2;
   };
 
   Charater.prototype.normal=function(){
     var _this=this;
-    _this.speed=5;
+    _this.speed=0.2;
     _this.ctx.translate(0, 0);
     _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
     _this.ctx.beginPath();
@@ -27,7 +27,7 @@ define([
 
   Charater.prototype.air=function(){
     var _this=this;
-    _this.speed=5;
+    _this.speed=0.2;
     _this.ctx.translate(0, 0);
     _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
     _this.ctx.beginPath();
@@ -39,7 +39,7 @@ define([
 
   Charater.prototype.ground=function(){
     var _this=this;
-    _this.speed=3;
+    _this.speed=0.1;
     _this.ctx.translate(0, 0);
     _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
     _this.ctx.beginPath();
