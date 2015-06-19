@@ -71,7 +71,7 @@ requirejs([
 
     myCharater.action(charaterAction);
 
-    $('#jumpBtn').on('click', function(e){
+    $('#jumpBtn').on('touchstart', function(e){
       if(charaterAction=='normal'){
         charaterAction='air';
         myCharater.action(charaterAction);
@@ -81,7 +81,7 @@ requirejs([
         }, 500);
       }
     });
-    $('#slideBtn').on('click', function(e){
+    $('#slideBtn').on('touchstart', function(e){
       if(charaterAction=='normal'){
         charaterAction='ground';
         myCharater.action(charaterAction);
