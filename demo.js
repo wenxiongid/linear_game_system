@@ -19,18 +19,19 @@ requirejs([
     var stage=document.getElementById('gameStage'),
       charater=document.getElementById('charater'),
       timeline=new TimeLine(),
-      myPath=new Path(stage, {
+      myCharater=new Character(charater),
+      myPath=new Path(stage, myCharater, {
         lineInfo: [{
           y: 350
         },{
           y: 400
         }]
       }),
-      myCharater=new Character(charater),
       charaterAction='normal';
 
-    myPath.noteFrequence=400;
+    myPath.noteFrequence=7;
     myPath.lineCount=3;
+    myPath.lastNode=myPath.canvas.width;
     myPath.addRandomNote=function(){
       var _this=this,
         addLineIndex=Math.floor(Math.random()*(_this.lineCount+_this.noteFrequence));
@@ -38,8 +39,15 @@ requirejs([
         if(!_this.line[addLineIndex]){
           _this.line[addLineIndex]=[];
         }
-        _this.line[addLineIndex].push(Math.floor(Math.random()*800)+_this.offset+_this.canvas.width);
+        _this.lastNode=_this.lastNode+(500+Math.floor(Math.random()*300));
+        if(_this.lastNode<_this.offset+_this.canvas.width){
+          _this.lastNode=_this.offset+_this.canvas.width;
+        }
+        _this.line[addLineIndex].push(_this.lastNode);
       }
+    };
+    myCharater.hit=function(){
+      alert('hit: ' + myPath.offset);
     };
 
     $(window).on('resize', function(){

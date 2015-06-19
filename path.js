@@ -3,17 +3,18 @@ define([
 ], function(
   $
 ){
-  var Path=function(canvas, option){
+  var Path=function(canvas, charater, option){
     var _this=this;
     _this.canvas=canvas;
+    _this.charater=charater;
     _this.line={};
     _this.width=canvas.width;
-    _this.gap=300;//test
+    _this.gap=1000;//test
     _this.ctx=_this.canvas.getContext('2d');
     _this.offset=0;
     _this.option=$.extend({
       lineInfo:[]
-    }, option);
+    }, option || {});
   };
 
   Path.prototype.draw=function(d_offset){
@@ -30,6 +31,7 @@ define([
       if(_this.option.lineInfo[i]){
         while(line.length){
           node_offset=line.splice(0,1)[0];
+          _this.checkHit(i, node_offset);
           if(node_offset>=_this.offset){
             new_line.push(node_offset);
             if(node_offset<=_this.offset + _this.canvas.width){
@@ -43,8 +45,6 @@ define([
     currentPoint=Math.round(currentPoint);
     _this.ctx.translate(0, 0);
     _this.ctx.beginPath();
-    // _this.ctx.strokeStyle='#000';
-    // _this.ctx.lineWidth=5;
     while(currentPoint<_this.canvas.width){
       _this.ctx.moveTo(currentPoint, 0);
       _this.ctx.lineTo(currentPoint, _this.canvas.height);
@@ -57,6 +57,29 @@ define([
   Path.prototype.addNote=function(lineIndex, offset){
     var _this=this;
     _this.line[lineIndex].push(offset);
+  };
+
+  Path.prototype.checkHit=function(lineIndex, note){
+    var _this=this;
+    _this.hitPoint=_this.offset + _this.charater.option.hitPoint;
+    if(note<=_this.hitPoint && note >= _this.hitPoint - 50){
+      switch(lineIndex){
+        case 0:
+        case '0':
+          if(_this.charater.line!='ground'){
+            _this.charater.hit();
+          }
+          break;
+        case 1:
+        case '1':
+          if(_this.charater.line!='air'){
+            _this.charater.hit();
+          }
+          break;
+        default:
+          // 
+      }
+    }
   };
 
   return Path;
