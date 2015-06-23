@@ -16,7 +16,8 @@ requirejs([
   }
 
   $(function(){
-    var stage=document.getElementById('gameStage'),
+    var stageHeight=600,
+      stage=document.getElementById('gameStage'),
       charater=document.getElementById('charater'),
       timeline=new TimeLine(),
       myCharater=new Character(charater),
@@ -50,14 +51,15 @@ requirejs([
       alert('hit: ' + myPath.offset);
     };
 
+    stage.height=stageHeight;
+    charater.height=stageHeight;
     $(window).on('resize', function(){
       var $this=$(this),
         w=$this.width(),
-        h=$this.height();
-      stage.width=w;
-      stage.height=h;
-      charater.width=w;
-      charater.height=h;
+        h=$this.height(),
+        newW=w/h*stageHeight;
+      stage.width=newW;
+      charater.width=newW;
     }).trigger('resize');
 
     var last_offset=0;
