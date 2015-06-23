@@ -49,9 +49,7 @@ define([
     // _this.runningTimer=setInterval(function(){
     //   _this.updateTime();
     // }, 1000 / 24);
-    _this.runningTimer=window.requestAnimationFrame(function(){
-      _this.updateTime();
-    });
+    _this.updateTime();
   };
 
   TimeLine.prototype.stop=function(){
@@ -71,12 +69,14 @@ define([
 
   TimeLine.prototype.updateTime=function(){
     var _this=this;
-    _this.currentTime=(new Date()).getTime();
-    _this.timeOffset=_this.currentTime-_this.startTime;
-    _this.runningTimer=window.requestAnimationFrame(function(){
-      _this.updateTime();
-    });
-    _this.trigger('timeUpdate', _this.timeOffset);
+    if(_this.status=='running'){
+      _this.runningTimer=window.requestAnimationFrame(function(){
+        _this.updateTime();
+      });
+      _this.currentTime=(new Date()).getTime();
+      _this.timeOffset=_this.currentTime-_this.startTime;
+      _this.trigger('timeUpdate', _this.timeOffset);
+    }
   };
 
   return TimeLine;

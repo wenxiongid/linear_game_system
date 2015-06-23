@@ -16,6 +16,7 @@ requirejs([
   }
 
   $(function(){
+    timeline=new TimeLine();
     var stageHeight=600,
       stage=document.getElementById('gameStage'),
       charater=document.getElementById('charater'),
@@ -53,13 +54,18 @@ requirejs([
 
     stage.height=stageHeight;
     charater.height=stageHeight;
-    $(window).on('resize', function(){
+    $(window).on('resize orientationchange', function(){
       var $this=$(this),
         w=$this.width(),
         h=$this.height(),
         newW=w/h*stageHeight;
       stage.width=newW;
       charater.width=newW;
+      if(w<h){
+        timeline.pause();
+      }else{
+        timeline.start();
+      }
     }).trigger('resize');
 
     var last_offset=0;
