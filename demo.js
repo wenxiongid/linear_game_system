@@ -14,6 +14,11 @@ requirejs([
   if(!Helper.canvasSupport()){
     return;
   }
+  function support_touch_event(){
+    return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
+  }
+
+  var btnEvent=support_touch_event() ? 'touchstart' : 'click';
 
   $(function(){
     timeline=new TimeLine();
@@ -79,7 +84,7 @@ requirejs([
 
     myCharater.action(charaterAction);
 
-    $('#jumpBtn').on('touchstart', function(e){
+    $('#jumpBtn').on(btnEvent, function(e){
       if(charaterAction=='normal'){
         charaterAction='air';
         myCharater.action(charaterAction);
@@ -89,7 +94,7 @@ requirejs([
         }, 500);
       }
     });
-    $('#slideBtn').on('touchstart', function(e){
+    $('#slideBtn').on(btnEvent, function(e){
       if(charaterAction=='normal'){
         charaterAction='ground';
         myCharater.action(charaterAction);
@@ -97,6 +102,19 @@ requirejs([
           charaterAction='normal';
           myCharater.action(charaterAction);
         }, 500);
+      }
+    });
+    $('#pauseStartBtn').on(btnEvent, function(e){
+      switch(timeline.status){
+        case 'running':
+          $(this).text('run');
+          timeline.pause();
+          break;
+        case 'paused':
+        case 'stop':
+        default:
+          $(this).text('pause');
+          timeline.start();
       }
     });
 
