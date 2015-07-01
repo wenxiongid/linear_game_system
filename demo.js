@@ -71,6 +71,7 @@ requirejs([
       }else{
         timeline.start();
       }
+      myCharater.action(charaterAction);
     }).trigger('resize');
 
     var last_offset=0;
