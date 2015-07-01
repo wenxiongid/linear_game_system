@@ -33,8 +33,7 @@ requirejs([
         },{
           y: 400
         }]
-      }),
-      charaterAction='normal';
+      });
 
     myPath.noteFrequence=7;
     myPath.lineCount=3;
@@ -54,7 +53,7 @@ requirejs([
       }
     };
     myCharater.hit=function(){
-      alert('hit: ' + myPath.offset);
+      console.log('hit: ' + myPath.offset);
     };
 
     stage.height=stageHeight;
@@ -71,7 +70,7 @@ requirejs([
       }else{
         timeline.start();
       }
-      myCharater.action(charaterAction);
+      myCharater.action('normal');
     }).trigger('resize');
 
     var last_offset=0;
@@ -83,25 +82,22 @@ requirejs([
       myPath.addRandomNote();
     });
 
-    myCharater.action(charaterAction);
+    myCharater.action('normal');
 
     $('#jumpBtn').on(btnEvent, function(e){
-      if(charaterAction=='normal'){
-        charaterAction='air';
-        myCharater.action(charaterAction);
-        setTimeout(function(){
-          charaterAction='normal';
-          myCharater.action(charaterAction);
-        }, 500);
+      if(myCharater.line=='normal'){
+        myCharater.action('air');
+        // setTimeout(function(){
+        //   charaterAction='normal';
+        //   myCharater.action(charaterAction);
+        // }, 500);
       }
     });
     $('#slideBtn').on(btnEvent, function(e){
-      if(charaterAction=='normal'){
-        charaterAction='ground';
-        myCharater.action(charaterAction);
+      if(myCharater.line=='normal'){
+        myCharater.action('ground');
         setTimeout(function(){
-          charaterAction='normal';
-          myCharater.action(charaterAction);
+          myCharater.action('normal');
         }, 500);
       }
     });
