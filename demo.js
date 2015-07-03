@@ -41,18 +41,20 @@ requirejs([
       getPoint=0;
 
     myPath.noteFrequence=0.2;// (0, 1]
+    myPath.goldFrequence=0.7;// [0, 1)
     myPath.lineCount=2;
-    myPath.lastNode=myPath.canvas.width;
+    myPath.lastNote=myPath.canvas.width;
+    myPath.lastGoldNote=myPath.canvas.width;
     myPath.addRandomNote=function(){
       var _this=this,
         addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.noteFrequence)),
         anotherLineIndex;
       if(addLineIndex<_this.lineCount){
-        _this.lastNode=_this.lastNode+(600+Math.floor(Math.random()*300));
-        if(_this.lastNode<_this.offset+_this.canvas.width){
-          _this.lastNode=_this.offset+_this.canvas.width;
+        _this.lastNote=_this.lastNote+(600+Math.floor(Math.random()*300));
+        if(_this.lastNote<_this.offset+_this.canvas.width){
+          _this.lastNote=_this.offset+_this.canvas.width;
         }
-        _this.addNote(addLineIndex, _this.lastNode, 1);
+        _this.addNote(addLineIndex, _this.lastNote, 1);
         switch(addLineIndex){
           case 0:
             anotherLineIndex=1;
@@ -60,7 +62,16 @@ requirejs([
           default:
             anotherLineIndex=0;
         }
-        _this.addNote(anotherLineIndex, _this.lastNode, 2);
+        _this.addNote(anotherLineIndex, _this.lastNote, 2);
+        _this.lastGoldNote=_this.lastNote;
+      }else{
+        if(Math.random()<_this.goldFrequence){
+          _this.lastGoldNote=_this.lastGoldNote + 100;
+          if(_this.lastGoldNote<_this.offset+_this.canvas.width){
+            _this.lastGoldNote=_this.offset+_this.canvas.width;
+          }
+          _this.addNote(Math.floor(Math.random()*_this.lineCount), _this.lastGoldNote, 2);
+        }
       }
     };
     myCharater.hit=function(type){
