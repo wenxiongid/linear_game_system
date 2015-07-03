@@ -53,7 +53,16 @@ requirejs([
       }
     };
     myCharater.hit=function(){
+      var _this=this;
       console.log('hit: ' + myPath.offset);
+      _this.speed=0;
+      _this.action('hit');
+      setTimeout(function(){
+        _this.startSpeedUpTime=null;
+        _this.action('normal');
+        _this.speed=0;
+        _this.startSpeedUp();
+      }, 100);
     };
 
     stage.height=stageHeight;
@@ -65,10 +74,12 @@ requirejs([
         newW=w/h*stageHeight;
       stage.width=newW;
       charater.width=newW;
-      if(w<h){
-        timeline.pause();
-      }else{
-        timeline.start();
+      if(timeline.isInit){
+        if(w<h){
+          timeline.pause();
+        }else{
+          timeline.start();
+        }
       }
       myCharater.action('normal');
     }).trigger('resize');
@@ -87,10 +98,6 @@ requirejs([
     $('#jumpBtn').on(btnEvent, function(e){
       if(myCharater.line=='normal'){
         myCharater.action('air');
-        // setTimeout(function(){
-        //   charaterAction='normal';
-        //   myCharater.action(charaterAction);
-        // }, 500);
       }
     });
     $('#slideBtn').on(btnEvent, function(e){
@@ -115,6 +122,11 @@ requirejs([
       }
     });
 
-    timeline.start();
+    $('#startBtn').on(btnEvent, function(e){
+      $('#mask').hide();
+      timeline.isInit=true;
+      timeline.start();
+      myCharater.startSpeedUp();
+    });
   });
 });

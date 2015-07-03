@@ -40,11 +40,14 @@ define([
           node_info.h=20;
           
           if(node_offset>=_this.offset){
-            new_line.push(node_offset);
             if(node_offset<=_this.offset + _this.canvas.width){
               _this.ctx.fillRect(node_info.x, node_info.y, node_info.w, node_info.h);
               _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
-              _this.checkHit(i, node_info);
+              if(!_this.checkHit(i, node_info)){
+                new_line.push(node_offset);
+              }
+            }else{
+              new_line.push(node_offset);
             }
           }
         }
