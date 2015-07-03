@@ -45,6 +45,9 @@ define([
               switch(node_info.type){
                 case 2://gold
                   _this.ctx.fillStyle='gold';
+                  if(i==0){
+                    node_draw_info.y -= 50;
+                  }
                   break;
                 case 1:
                 default:
