@@ -40,43 +40,50 @@ requirejs([
       }),
       getPoint=0;
 
-    myPath.noteFrequence=0.2;// (0, 1]
-    myPath.goldFrequence=0.7;// [0, 1)
+    myPath.nodeFrequence=0.2;// (0, 1]
+    myPath.goldFrequence=0.5;// [0, 1)
     myPath.lineCount=2;
-    myPath.lastNote=myPath.canvas.width;
-    myPath.lastGoldNote=myPath.canvas.width;
-    myPath.addRandomNote=function(){
+    myPath.lastNode=Math.ceil(myPath.canvas.width / 50) * 50;
+    myPath.lastGoldNode=myPath.lastNode;
+    myPath.addRandomNode=function(){
       var _this=this,
-        addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.noteFrequence)),
-        anotherLineIndex;
+        addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.nodeFrequence)),
+        anotherLineIndex,
+        startGridOffset=Math.ceil((_this.offset+_this.canvas.width) / 50) * 50,
+        current_node;
       if(addLineIndex<_this.lineCount){
-        _this.lastNote=_this.lastNote+(600+Math.floor(Math.random()*300));
-        if(_this.lastNote<_this.offset+_this.canvas.width){
-          _this.lastNote=_this.offset+_this.canvas.width;
+        current_node=_this.lastNode+(12+Math.floor(Math.random()*6)) * 50;
+        if(current_node<startGridOffset){
+          current_node=startGridOffset;
         }
-        _this.addNote(addLineIndex, _this.lastNote, 1);
-        switch(addLineIndex){
-          case 0:
-            anotherLineIndex=1;
-            break;
-          default:
-            anotherLineIndex=0;
+        if(current_node<startGridOffset + 12 * 50){
+          _this.addNode(addLineIndex, current_node, 1);
+          _this.lastNode=current_node;
+          switch(addLineIndex){
+            case 0:
+              anotherLineIndex=1;
+              break;
+            default:
+              anotherLineIndex=0;
+          }
+          _this.addNode(anotherLineIndex, current_node, 2);
+          _this.lastGoldNode=_this.lastNode;
         }
-        _this.addNote(anotherLineIndex, _this.lastNote, 2);
-        _this.lastGoldNote=_this.lastNote;
       }else{
         if(Math.random()<_this.goldFrequence){
-          _this.lastGoldNote=_this.lastGoldNote + 100;
-          if(_this.lastGoldNote<_this.offset+_this.canvas.width){
-            _this.lastGoldNote=_this.offset+_this.canvas.width;
+          _this.lastGoldNode=_this.lastGoldNode + 2 * 50;
+          if(_this.lastGoldNode<startGridOffset){
+            _this.lastGoldNode=startGridOffset;
           }
-          _this.addNote(Math.floor(Math.random()*_this.lineCount), _this.lastGoldNote, 2);
+          if(_this.lastGoldNode<startGridOffset + 12 * 50){
+            _this.addNode(Math.floor(Math.random()*_this.lineCount), _this.lastGoldNode, 2);
+          }
         }
       }
     };
     myCharater.hit=function(type){
       var _this=this;
-      console.log('hit: ' + myPath.offset+ ', type: '+type);
+      // console.log('hit: ' + myPath.offset+ ', type: '+type);
       switch(type){
         case 2:
           updateResult(++getPoint);
@@ -119,7 +126,7 @@ requirejs([
       var current_d_offset=timeOffset-last_offset;
       myPath.draw(myCharater.speed*current_d_offset);
       last_offset=timeOffset;
-      myPath.addRandomNote();
+      myPath.addRandomNode();
     });
 
     myCharater.action('normal');

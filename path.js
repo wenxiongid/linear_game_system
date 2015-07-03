@@ -28,14 +28,17 @@ define([
     $.each(_this.line, function(i, line){
       var new_line=[],
         node_offset,
-        node_info={};
+        node_info,
+        node_draw_info={};
       if(_this.option.lineInfo[i]){
         while(line.length){
           node_info=line.splice(0,1)[0];
-          node_info.x=Math.round(node_info.offset- _this.offset);
-          node_info.y=Math.round(_this.option.lineInfo[i].y);
-          node_info.w=20;
-          node_info.h=20;
+          node_draw_info={};
+          node_draw_info.x=Math.round(node_info.offset- _this.offset);
+          node_draw_info.y=Math.round(_this.option.lineInfo[i].y);
+          node_draw_info.w=20;
+          node_draw_info.h=20;
+          node_draw_info.type=node_info.type;
           
           if(node_info.offset>=_this.offset){
             if(node_info.offset<=_this.offset + _this.canvas.width){
@@ -47,9 +50,9 @@ define([
                 default:
                   _this.ctx.fillStyle='#000';
               }
-              _this.ctx.fillRect(node_info.x, node_info.y, node_info.w, node_info.h);
+              _this.ctx.fillRect(node_draw_info.x, node_draw_info.y, node_draw_info.w, node_draw_info.h);
               _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
-              if(!_this.checkHit(i, node_info)){
+              if(!_this.checkHit(i, node_draw_info)){
                 new_line.push(node_info);
               }
             }else{
@@ -58,6 +61,7 @@ define([
           }
         }
         _this.line[i]=new_line;
+        console.log(new_line.length);
       }
     });
 
@@ -74,33 +78,41 @@ define([
     _this.ctx.closePath();
   };
 
-  Path.prototype.addNote=function(lineIndex, offset, type){
-    var _this=this;
+  Path.prototype.addNode=function(lineIndex, offset, type){
+    var _this=this,
+      isExist=false;
     if(!_this.line[lineIndex]){
       _this.line[lineIndex]=[];
     }
-    _this.line[lineIndex].push({
-      offset: offset,
-      type: type
+    $.each(_this.line[lineIndex], function(i, node){
+      if(node.offset==offset){
+        isExist=true;
+      }
     });
+    if(!isExist){
+      _this.line[lineIndex].push({
+        offset: offset,
+        type: type
+      });
+    }
   };
 
   // simple check
-  Path.prototype.checkHit=function(lineIndex, note){
+  Path.prototype.checkHit=function(lineIndex, node){
     var _this=this;
     _this.hitPoint=_this.offset + _this.charater.option.hitPoint;
-    if(note.offset<=_this.hitPoint && note.offset >= _this.hitPoint - 50){
+    if(node.offset<=_this.hitPoint && node.offset >= _this.hitPoint - 50){
       switch(lineIndex){
         case 0:
         case '0':
           if(_this.charater.line!='ground'){
-            _this.charater.hit(note.type);
+            _this.charater.hit(node.type);
           }
           break;
         case 1:
         case '1':
           if(_this.charater.line!='air'){
-            _this.charater.hit(note.type);
+            _this.charater.hit(node.type);
           }
           break;
         default:
@@ -110,14 +122,14 @@ define([
   };
 
   // trandition check
-  Path.prototype.checkHit=function(lineIndex, noteInfo){
+  Path.prototype.checkHit=function(lineIndex, nodeInfo){
     var _this=this,
       start_point,
       end_point,
       isHit=false;
-    for(var i=0; i<noteInfo.h; i++){
-      start_point=(noteInfo.y+i)*_this.canvas.width+noteInfo.x;
-      end_point=start_point+noteInfo.w;
+    for(var i=0; i<nodeInfo.h; i++){
+      start_point=(nodeInfo.y+i)*_this.canvas.width+nodeInfo.x;
+      end_point=start_point+nodeInfo.w;
       for(var j=start_point; j<end_point; j++){
         if(_this.charaterImgData[j * 4 + 3]>0 && _this.pathImgData[j * 4 + 3] >0){
           isHit=true;
@@ -130,7 +142,7 @@ define([
     }
 
     if(isHit){
-      _this.charater.hit(noteInfo.type);
+      _this.charater.hit(nodeInfo.type);
     }
     return isHit;
   };
