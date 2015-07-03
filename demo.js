@@ -20,6 +20,10 @@ requirejs([
 
   var btnEvent=support_touch_event() ? 'touchstart' : 'click';
 
+  var updateResult=function(point){
+    $('#result').text(point);
+  };
+
   $(function(){
     timeline=new TimeLine();
     var stageHeight=600,
@@ -33,36 +37,50 @@ requirejs([
         },{
           y: 400
         }]
-      });
+      }),
+      getPoint=0;
 
-    myPath.noteFrequence=7;
-    myPath.lineCount=3;
+    myPath.noteFrequence=0.2;// (0, 1]
+    myPath.lineCount=2;
     myPath.lastNode=myPath.canvas.width;
     myPath.addRandomNote=function(){
       var _this=this,
-        addLineIndex=Math.floor(Math.random()*(_this.lineCount+_this.noteFrequence));
+        addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.noteFrequence)),
+        anotherLineIndex;
       if(addLineIndex<_this.lineCount){
-        if(!_this.line[addLineIndex]){
-          _this.line[addLineIndex]=[];
-        }
-        _this.lastNode=_this.lastNode+(500+Math.floor(Math.random()*300));
+        _this.lastNode=_this.lastNode+(600+Math.floor(Math.random()*300));
         if(_this.lastNode<_this.offset+_this.canvas.width){
           _this.lastNode=_this.offset+_this.canvas.width;
         }
-        _this.line[addLineIndex].push(_this.lastNode);
+        _this.addNote(addLineIndex, _this.lastNode, 1);
+        switch(addLineIndex){
+          case 0:
+            anotherLineIndex=1;
+            break;
+          default:
+            anotherLineIndex=0;
+        }
+        _this.addNote(anotherLineIndex, _this.lastNode, 2);
       }
     };
-    myCharater.hit=function(){
+    myCharater.hit=function(type){
       var _this=this;
-      console.log('hit: ' + myPath.offset);
-      _this.speed=0;
-      _this.action('hit');
-      setTimeout(function(){
-        _this.startSpeedUpTime=null;
-        _this.action('normal');
-        _this.speed=0;
-        _this.startSpeedUp();
-      }, 100);
+      console.log('hit: ' + myPath.offset+ ', type: '+type);
+      switch(type){
+        case 2:
+          updateResult(++getPoint);
+          break;
+        case 1:
+        default:
+          _this.speed=0;
+        _this.action('hit');
+        setTimeout(function(){
+          _this.startSpeedUpTime=null;
+          _this.action('normal');
+          _this.speed=0;
+          _this.startSpeedUp();
+        }, 100);
+      }
     };
 
     stage.height=stageHeight;

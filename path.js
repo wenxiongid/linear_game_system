@@ -23,7 +23,6 @@ define([
       currentPoint=-(offset % _this.gap) + _this.gap;
     _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
     _this.offset=offset;
-    _this.ctx.strokeStyle='#000';
     _this.ctx.lineWidth=5;
     _this.charaterImgData=_this.charater.ctx.getImageData(0, 0, _this.charater.canvas.width, _this.charater.canvas.height).data;
     $.each(_this.line, function(i, line){
@@ -32,22 +31,29 @@ define([
         node_info={};
       if(_this.option.lineInfo[i]){
         while(line.length){
-          node_offset=line.splice(0,1)[0];
-          node_info={};
-          node_info.x=Math.round(node_offset- _this.offset);
+          node_info=line.splice(0,1)[0];
+          node_info.x=Math.round(node_info.offset- _this.offset);
           node_info.y=Math.round(_this.option.lineInfo[i].y);
           node_info.w=20;
           node_info.h=20;
           
-          if(node_offset>=_this.offset){
-            if(node_offset<=_this.offset + _this.canvas.width){
+          if(node_info.offset>=_this.offset){
+            if(node_info.offset<=_this.offset + _this.canvas.width){
+              switch(node_info.type){
+                case 2://gold
+                  _this.ctx.fillStyle='gold';
+                  break;
+                case 1:
+                default:
+                  _this.ctx.fillStyle='#000';
+              }
               _this.ctx.fillRect(node_info.x, node_info.y, node_info.w, node_info.h);
               _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
               if(!_this.checkHit(i, node_info)){
-                new_line.push(node_offset);
+                new_line.push(node_info);
               }
             }else{
-              new_line.push(node_offset);
+              new_line.push(node_info);
             }
           }
         }
@@ -58,6 +64,7 @@ define([
     currentPoint=Math.round(currentPoint);
     _this.ctx.translate(0, 0);
     _this.ctx.beginPath();
+    _this.ctx.strokeStyle='#000';
     while(currentPoint<_this.canvas.width){
       _this.ctx.moveTo(currentPoint, 0);
       _this.ctx.lineTo(currentPoint, _this.canvas.height);
@@ -67,26 +74,33 @@ define([
     _this.ctx.closePath();
   };
 
-  Path.prototype.addNote=function(lineIndex, offset){
+  Path.prototype.addNote=function(lineIndex, offset, type){
     var _this=this;
-    _this.line[lineIndex].push(offset);
+    if(!_this.line[lineIndex]){
+      _this.line[lineIndex]=[];
+    }
+    _this.line[lineIndex].push({
+      offset: offset,
+      type: type
+    });
   };
 
+  // simple check
   Path.prototype.checkHit=function(lineIndex, note){
     var _this=this;
     _this.hitPoint=_this.offset + _this.charater.option.hitPoint;
-    if(note<=_this.hitPoint && note >= _this.hitPoint - 50){
+    if(note.offset<=_this.hitPoint && note.offset >= _this.hitPoint - 50){
       switch(lineIndex){
         case 0:
         case '0':
           if(_this.charater.line!='ground'){
-            _this.charater.hit();
+            _this.charater.hit(note.type);
           }
           break;
         case 1:
         case '1':
           if(_this.charater.line!='air'){
-            _this.charater.hit();
+            _this.charater.hit(note.type);
           }
           break;
         default:
@@ -95,6 +109,7 @@ define([
     }
   };
 
+  // trandition check
   Path.prototype.checkHit=function(lineIndex, noteInfo){
     var _this=this,
       start_point,
@@ -115,7 +130,7 @@ define([
     }
 
     if(isHit){
-      _this.charater.hit();
+      _this.charater.hit(noteInfo.type);
     }
     return isHit;
   };

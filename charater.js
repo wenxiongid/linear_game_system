@@ -1,8 +1,10 @@
 define([
+  'request_frame',
   'event',
   'helper',
   'jquery'
 ], function(
+  w,
   EV,
   Helper,
   $
@@ -40,7 +42,7 @@ define([
     if(_this.speed<_this.option.speedMax){
       _this.isUppingSpeed=true;
       _this.speed=_this.startSpeedUpSpeed + (currentTime - _this.startSpeedUpTime)/ 1000 * _this.option.accelerate;
-      window.requestAnimationFrame(function(){
+      w.requestAnimationFrame(function(){
         _this.speedUp();
       });
     }else{
@@ -88,7 +90,7 @@ define([
       newY=_this.vY0*airTime - _this.g * airTime * airTime / 2;
     if(newY>=0){
       _this.draw(newY);
-      window.requestAnimationFrame(function(){
+      w.requestAnimationFrame(function(){
         _this.changeAirPos();
       });
     }else{
