@@ -22,7 +22,7 @@ define([
     _this.vY0=300;
     _this.g=450;
     _this.speed=0;
-    _this.fillStyle='#c45';
+    _this.actionTimer=0;
   };
 
   Charater.prototype.startSpeedUp=function(){
@@ -51,16 +51,37 @@ define([
     }
   };
 
-  Charater.prototype.draw=function(y){
-    var _this=this;
+  Charater.prototype.draw=function(y, type){
+    var _this=this,
+      charaterImg;
     _this.charaterY=y;
     _this.ctx.translate(0, 0);
     _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-    _this.ctx.beginPath();
-    _this.ctx.fillStyle=_this.fillStyle;
-    _this.ctx.arc(_this.option.hitPoint-50, 400-y, 50, 0, 2 * Math.PI, true);
-    _this.ctx.fill();
-    _this.ctx.closePath();
+    switch(type){
+      case 'air':
+        break;
+      case 'ground':
+        break;
+      case 'normal':
+        // go on
+      default:
+        switch(true){
+          case _this.speed>0.4:
+            charaterImg=_this.option.runImg;
+            break;
+          case _this.speed>0 && _this.speed<=0.4:
+            charaterImg=_this.option.walkImg;
+            break;
+          default:
+            charaterImg=_this.option.standImg;
+        }
+    }
+    _this.ctx.drawImage(charaterImg, _this.option.hitPoint-charaterImg.width, 400-y);
+    // _this.ctx.beginPath();
+    // _this.ctx.fillStyle=_this.fillStyle;
+    // _this.ctx.arc(_this.option.hitPoint-50, 400-y, 50, 0, 2 * Math.PI, true);
+    // _this.ctx.fill();
+    // _this.ctx.closePath();
   };
 
   Charater.prototype.drawHit=function(){
@@ -72,8 +93,10 @@ define([
   Charater.prototype.normal=function(){
     var _this=this;
     _this.line='normal';
-    _this.fillStyle='#c45';
-    _this.draw(0);
+    _this.draw(0, 'normal');
+    _this.actionTimer=setTimeout(function(){
+      _this.normal();
+    }, 100);
   };
 
   Charater.prototype.air=function(){

@@ -3,13 +3,15 @@ requirejs([
   'helper',
   'timeline',
   'path',
-  'charater'
+  'charater',
+  'img_loader'
 ], function(
   $,
   Helper,
   TimeLine,
   Path,
-  Character
+  Character,
+  ImgLoader
 ){
   if(!Helper.canvasSupport()){
     return;
@@ -24,82 +26,109 @@ requirejs([
     $('#result').text(point);
   };
 
+  var myImgLoader=new ImgLoader();
+
+  
+
   $(function(){
     timeline=new TimeLine();
     var stageHeight=600,
       stage=document.getElementById('gameStage'),
       charater=document.getElementById('charater'),
       timeline=new TimeLine(),
-      myCharater=new Character(charater),
+      myCharater,
+      myPath,
+      getPoint=0;
+
+    var charater_path_init=function(){
+      myPath.nodeFrequence=0.2;// (0, 1]
+      myPath.goldFrequence=0.5;// [0, 1)
+      myPath.lineCount=2;
+      myPath.lastNode=Math.ceil(myPath.canvas.width / 50) * 50;
+      myPath.lastGoldNode=myPath.lastNode;
+      myPath.addRandomNode=function(){
+        var _this=this,
+          addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.nodeFrequence)),
+          anotherLineIndex,
+          startGridOffset=Math.ceil((_this.offset+_this.canvas.width) / 50) * 50,
+          current_node;
+        if(addLineIndex<_this.lineCount){
+          current_node=_this.lastNode+(12+Math.floor(Math.random()*6)) * 50;
+          if(current_node<startGridOffset){
+            current_node=startGridOffset;
+          }
+          if(current_node<startGridOffset + 12 * 50){
+            _this.addNode(addLineIndex, current_node, 1);
+            _this.lastNode=current_node;
+            switch(addLineIndex){
+              case 0:
+                anotherLineIndex=1;
+                break;
+              default:
+                anotherLineIndex=0;
+            }
+            _this.addNode(anotherLineIndex, current_node, 2);
+            _this.lastGoldNode=_this.lastNode;
+          }
+        }else{
+          if(Math.random()<_this.goldFrequence){
+            _this.lastGoldNode=_this.lastGoldNode + 2 * 50;
+            if(_this.lastGoldNode<startGridOffset){
+              _this.lastGoldNode=startGridOffset;
+            }
+            if(_this.lastGoldNode<startGridOffset + 12 * 50){
+              _this.addNode(Math.floor(Math.random()*_this.lineCount), _this.lastGoldNode, 2);
+            }
+          }
+        }
+      };
+      myCharater.hit=function(type){
+        var _this=this;
+        // console.log('hit: ' + myPath.offset+ ', type: '+type);
+        switch(type){
+          case 2:
+            updateResult(++getPoint);
+            break;
+          case 1:
+          default:
+            _this.speed=0;
+          _this.action('hit');
+          setTimeout(function(){
+            _this.startSpeedUpTime=null;
+            _this.action('normal');
+            _this.speed=0;
+            _this.startSpeedUp();
+          }, 100);
+        }
+      };
+
+      myCharater.action('normal');
+    };
+
+    $.when(
+      myImgLoader.load('img/stand.png'),
+      myImgLoader.load('img/walk.png'),
+      myImgLoader.load('img/run.png')
+    ).done(function(
+      standImg,
+      walkImg,
+      runImg
+    ){
+      myCharater=new Character(charater, {
+        standImg: standImg,
+        walkImg: walkImg,
+        runImg: runImg
+      });
       myPath=new Path(stage, myCharater, {
         lineInfo: [{
           y: 350
         },{
           y: 400
         }]
-      }),
-      getPoint=0;
+      });
 
-    myPath.nodeFrequence=0.2;// (0, 1]
-    myPath.goldFrequence=0.5;// [0, 1)
-    myPath.lineCount=2;
-    myPath.lastNode=Math.ceil(myPath.canvas.width / 50) * 50;
-    myPath.lastGoldNode=myPath.lastNode;
-    myPath.addRandomNode=function(){
-      var _this=this,
-        addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.nodeFrequence)),
-        anotherLineIndex,
-        startGridOffset=Math.ceil((_this.offset+_this.canvas.width) / 50) * 50,
-        current_node;
-      if(addLineIndex<_this.lineCount){
-        current_node=_this.lastNode+(12+Math.floor(Math.random()*6)) * 50;
-        if(current_node<startGridOffset){
-          current_node=startGridOffset;
-        }
-        if(current_node<startGridOffset + 12 * 50){
-          _this.addNode(addLineIndex, current_node, 1);
-          _this.lastNode=current_node;
-          switch(addLineIndex){
-            case 0:
-              anotherLineIndex=1;
-              break;
-            default:
-              anotherLineIndex=0;
-          }
-          _this.addNode(anotherLineIndex, current_node, 2);
-          _this.lastGoldNode=_this.lastNode;
-        }
-      }else{
-        if(Math.random()<_this.goldFrequence){
-          _this.lastGoldNode=_this.lastGoldNode + 2 * 50;
-          if(_this.lastGoldNode<startGridOffset){
-            _this.lastGoldNode=startGridOffset;
-          }
-          if(_this.lastGoldNode<startGridOffset + 12 * 50){
-            _this.addNode(Math.floor(Math.random()*_this.lineCount), _this.lastGoldNode, 2);
-          }
-        }
-      }
-    };
-    myCharater.hit=function(type){
-      var _this=this;
-      // console.log('hit: ' + myPath.offset+ ', type: '+type);
-      switch(type){
-        case 2:
-          updateResult(++getPoint);
-          break;
-        case 1:
-        default:
-          _this.speed=0;
-        _this.action('hit');
-        setTimeout(function(){
-          _this.startSpeedUpTime=null;
-          _this.action('normal');
-          _this.speed=0;
-          _this.startSpeedUp();
-        }, 100);
-      }
-    };
+      charater_path_init();
+    });
 
     stage.height=stageHeight;
     charater.height=stageHeight;
@@ -119,7 +148,9 @@ requirejs([
           timeline.start();
         }
       }
-      myCharater.action('normal');
+      if(myCharater && myCharater.action){
+        myCharater.action('normal');
+      }
     }).trigger('resize');
 
     var last_offset=0,
@@ -142,8 +173,6 @@ requirejs([
       last_offset=timeOffset;
       myPath.addRandomNode();
     });
-
-    myCharater.action('normal');
 
     $('#jumpBtn').on(btnEvent, function(e){
       if(myCharater.line=='normal'){
@@ -177,6 +206,10 @@ requirejs([
       timeline.isInit=true;
       timeline.start();
       myCharater.startSpeedUp();
+    });
+
+    $(document).on('touchmove', function(e){
+      e.preventDefault();
     });
   });
 });
