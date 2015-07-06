@@ -68,17 +68,17 @@ define([
       }
     });
 
-    currentPoint=Math.round(currentPoint);
-    _this.ctx.translate(0, 0);
-    _this.ctx.beginPath();
-    _this.ctx.strokeStyle='#000';
-    while(currentPoint<_this.canvas.width){
-      _this.ctx.moveTo(currentPoint, 0);
-      _this.ctx.lineTo(currentPoint, _this.canvas.height);
-      currentPoint+=_this.gap;
-    }
-    _this.ctx.stroke();
-    _this.ctx.closePath();
+    // currentPoint=Math.round(currentPoint);
+    // _this.ctx.translate(0, 0);
+    // _this.ctx.beginPath();
+    // _this.ctx.strokeStyle='#000';
+    // while(currentPoint<_this.canvas.width){
+    //   _this.ctx.moveTo(currentPoint, 0);
+    //   _this.ctx.lineTo(currentPoint, _this.canvas.height);
+    //   currentPoint+=_this.gap;
+    // }
+    // _this.ctx.stroke();
+    // _this.ctx.closePath();
   };
 
   Path.prototype.addNode=function(lineIndex, offset, type){

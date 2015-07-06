@@ -103,11 +103,13 @@ requirejs([
 
     stage.height=stageHeight;
     charater.height=stageHeight;
+    var windowW=0;
     $(window).on('resize orientationchange', function(){
       var $this=$(this),
         w=$this.width(),
         h=$this.height(),
         newW=w/h*stageHeight;
+      windowW=w;
       stage.width=newW;
       charater.width=newW;
       if(timeline.isInit){
@@ -120,11 +122,23 @@ requirejs([
       myCharater.action('normal');
     }).trigger('resize');
 
-    var last_offset=0;
+    var last_offset=0,
+      $worldBg=$('#worldBg'),
+      $laneBg=$('#laneBg');
 
     timeline.bind('timeUpdate', function(timeOffset){
       var current_d_offset=timeOffset-last_offset;
       myPath.draw(myCharater.speed*current_d_offset);
+      var world_offset=myPath.offset*0.1,
+        lane_offset=myPath.offset;
+      $worldBg.css({
+        'width': windowW + world_offset,
+        'transform': 'translate3d('+ -world_offset +'px, 0, 0)'
+      });
+      $laneBg.css({
+        'width': windowW + lane_offset,
+        'transform': 'translate3d('+ -lane_offset +'px, 0, 0)'
+      });
       last_offset=timeOffset;
       myPath.addRandomNode();
     });
