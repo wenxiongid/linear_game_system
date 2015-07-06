@@ -5,7 +5,8 @@ define(['helper'], function(Helper){
   };
 
   EV.prototype.isFunction=function(fn){
-    return !!(fn && toString.call(fn)=='[object Function]');
+    var flag=!!(fn && toString.call(fn)=='[object Function]');
+    return flag;
   };
 
   EV.prototype.bind=function(eventType, fn){
