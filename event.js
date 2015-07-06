@@ -4,17 +4,12 @@ define(['helper'], function(Helper){
     _this.eventList={};
   };
 
-  EV.prototype.isFunction=function(fn){
-    var flag=!!(fn && toString.call(fn)=='[object Function]');
-    return flag;
-  };
-
   EV.prototype.bind=function(eventType, fn){
     var _this=this;
     if(!_this.eventList[eventType]){
       _this.eventList[eventType]=[];
     }
-    if(_this.isFunction(fn)){
+    if(Helper.isFunction(fn)){
       _this.eventList[eventType].push(fn);
     }
   };
