@@ -104,6 +104,7 @@ define([
 
   Charater.prototype.normal=function(){
     var _this=this;
+    clearTimeout(_this.actionTimer);
     _this.line='normal';
     _this.draw(0, 'normal');
     _this.actionTimer=setTimeout(function(){
@@ -113,6 +114,7 @@ define([
 
   Charater.prototype.air=function(){
     var _this=this;
+    clearTimeout(_this.actionTimer);
     _this.line='air';
     _this.startAirTime=(new Date()).getTime();
     _this.changeAirPos();
@@ -135,6 +137,7 @@ define([
 
   Charater.prototype.ground=function(){
     var _this=this;
+    clearTimeout(_this.actionTimer);
     _this.line='ground';
     _this.draw(-50);
     _this.speed*=0.8;
