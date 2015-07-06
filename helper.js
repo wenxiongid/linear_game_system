@@ -1,7 +1,11 @@
-define(function(){
+define([
+  'jquery'
+], function(
+  $
+){
   var Helper={
     isFunction: function(fn){
-      return !!(fn && toString.call(fn)=='[object Function]');
+      return $.isFunction(fn);
     },
     inherit: function(o) {
       var F = function() {};
