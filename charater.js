@@ -64,6 +64,8 @@ define([
         break;
       case 'normal':
         // go on
+      case 'hit':
+        break;
       default:
         switch(true){
           case _this.speed>0.4:
@@ -76,12 +78,20 @@ define([
             charaterImg=_this.option.standImg;
         }
     }
-    _this.ctx.drawImage(charaterImg, _this.option.hitPoint-charaterImg.width, 400-y);
-    // _this.ctx.beginPath();
-    // _this.ctx.fillStyle=_this.fillStyle;
-    // _this.ctx.arc(_this.option.hitPoint-50, 400-y, 50, 0, 2 * Math.PI, true);
-    // _this.ctx.fill();
-    // _this.ctx.closePath();
+    if(!charaterImg.step && charaterImg.step!=0){
+      charaterImg.step=0;
+    }
+    charaterImg.step %= charaterImg.stepCount;
+    _this.ctx.drawImage(
+      charaterImg.img,
+      0,
+      (charaterImg.step-1)*charaterImg.height,
+      charaterImg.width,
+      charaterImg.height,
+      _this.option.hitPoint-charaterImg.width,
+      400-y
+    );
+    charaterImg.step++;
   };
 
   Charater.prototype.drawHit=function(){

@@ -115,9 +115,24 @@ requirejs([
       runImg
     ){
       myCharater=new Character(charater, {
-        standImg: standImg,
-        walkImg: walkImg,
-        runImg: runImg
+        standImg: {
+          img: standImg,
+          width: 132,
+          height: 218,
+          stepCount: 1
+        },
+        walkImg: {
+          img: walkImg,
+          width: 132,
+          height: 220,
+          stepCount: 4
+        },
+        runImg: {
+          img: runImg,
+          width: 161,
+          height: 241,
+          stepCount: 4
+        }
       });
       myPath=new Path(stage, myCharater, {
         lineInfo: [{
