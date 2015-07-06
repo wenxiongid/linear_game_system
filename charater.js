@@ -62,10 +62,10 @@ define([
         break;
       case 'ground':
         break;
-      case 'normal':
-        // go on
       case 'hit':
         break;
+      case 'normal':
+        // go on
       default:
         switch(true){
           case _this.speed>0.4:
@@ -85,11 +85,13 @@ define([
     _this.ctx.drawImage(
       charaterImg.img,
       0,
-      (charaterImg.step-1)*charaterImg.height,
+      charaterImg.step*charaterImg.height,
       charaterImg.width,
       charaterImg.height,
       _this.option.hitPoint-charaterImg.width,
-      400-y
+      400-y,
+      charaterImg.width,
+      charaterImg.height
     );
     charaterImg.step++;
   };
