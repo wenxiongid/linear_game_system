@@ -1,6 +1,6 @@
 define(function(){
   var Helper={
-    isFunction: function(){
+    isFunction: function(fn){
       return !!(fn && toString.call(fn)=='[object Function]');
     },
     inherit: function(o) {
