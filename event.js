@@ -21,7 +21,7 @@ define(['helper'], function(Helper){
     paramList.splice(0,1);
     if(eventList){
       for(var i=0; i<eventList.length;i++){
-        if(_this.isFunction(eventList[i])){
+        if(Helper.isFunction(eventList[i])){
           eventList[i].apply(_this, paramList);
         }
       }
