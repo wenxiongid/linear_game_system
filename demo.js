@@ -104,7 +104,7 @@ requirejs([
         }
       };
 
-      myCharater.action('normal');
+      myCharater.action('stand');
     };
 
     var update_air_node_step=function(){
@@ -297,7 +297,7 @@ requirejs([
       $('#mask').hide();
       timeline.isInit=true;
       timeline.start();
-      myCharater.startSpeedUp();
+      myCharater.action('normal');
     });
 
     $(document).on('touchmove', function(e){

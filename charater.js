@@ -175,6 +175,9 @@ define([
       case 'hit':
         _this.drawHit();
         break;
+      case 'stand':
+        _this.normal();
+        break;
       default:
         if(_this.line=='normal'){
           _this.startSpeedUpTime=null;
