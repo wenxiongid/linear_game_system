@@ -35,19 +35,25 @@ define([
   Charater.prototype.speedUp=function(){
     var _this=this,
       currentTime=(new Date()).getTime();
-    if(!_this.startSpeedUpTime){
-      _this.startSpeedUpTime=(new Date()).getTime();
-      _this.startSpeedUpSpeed=_this.speed;
-    }
-    if(_this.speed<_this.option.speedMax){
-      _this.isUppingSpeed=true;
-      _this.speed=_this.startSpeedUpSpeed + (currentTime - _this.startSpeedUpTime)/ 1000 * _this.option.accelerate;
-      w.requestAnimationFrame(function(){
-        _this.speedUp();
-      });
-    }else{
+    if(_this.isHit){
       _this.isUppingSpeed=false;
-      _this.speed=_this.option.speedMax;
+      _this.startSpeedUpTime=null;
+      _this.startSpeedUpSpeed=_this.speed;
+    }else{
+      if(!_this.startSpeedUpTime){
+        _this.startSpeedUpTime=(new Date()).getTime();
+        _this.startSpeedUpSpeed=_this.speed;
+      }
+      if(_this.speed<_this.option.speedMax){
+        _this.isUppingSpeed=true;
+        _this.speed=_this.startSpeedUpSpeed + (currentTime - _this.startSpeedUpTime)/ 1000 * _this.option.accelerate;
+        w.requestAnimationFrame(function(){
+          _this.speedUp();
+        });
+      }else{
+        _this.isUppingSpeed=false;
+        _this.speed=_this.option.speedMax;
+      }
     }
   };
 
@@ -57,26 +63,40 @@ define([
     _this.charaterY=y;
     _this.ctx.translate(0, 0);
     _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-    switch(type){
-      case 'air':
-        break;
-      case 'ground':
-        break;
-      case 'hit':
-        break;
-      case 'normal':
-        // go on
-      default:
-        switch(true){
-          case _this.speed>0.4:
-            charaterImg=_this.option.runImg;
-            break;
-          case _this.speed>0 && _this.speed<=0.4:
-            charaterImg=_this.option.walkImg;
-            break;
-          default:
-            charaterImg=_this.option.standImg;
-        }
+    if(_this.isHit){
+      charaterImg=_this.option.hitImg;
+      if(_this.line=='ground'){
+        y=-57;
+      }else{
+        y-=57;
+      }
+    }else{
+      switch(type){
+        case 'air':
+          charaterImg=_this.option.jumpImg;
+          break;
+        case 'ground':
+          charaterImg=_this.option.slideImg;
+          y-=10;
+          break;
+        case 'hit':
+          charaterImg=_this.option.hitImg;
+          break;
+        case 'normal':
+          // go on
+        default:
+          switch(true){
+            case _this.speed>0.4:
+              charaterImg=_this.option.runImg;
+              y+=21;
+              break;
+            case _this.speed>0 && _this.speed<=0.4:
+              charaterImg=_this.option.walkImg;
+              break;
+            default:
+              charaterImg=_this.option.standImg;
+          }
+      }
     }
     if(!charaterImg.step && charaterImg.step!=0){
       charaterImg.step=0;
@@ -89,7 +109,7 @@ define([
       charaterImg.width,
       charaterImg.height,
       _this.option.hitPoint-charaterImg.width,
-      400-y,
+      320-y,
       charaterImg.width,
       charaterImg.height
     );
@@ -98,8 +118,8 @@ define([
 
   Charater.prototype.drawHit=function(){
     var _this=this;
-    _this.fillStyle='#45c';
-    _this.draw(_this.charaterY);
+    clearTimeout(_this.actionTimer);
+    _this.draw(_this.charaterY, 'hit');
   };
 
   Charater.prototype.normal=function(){
@@ -126,7 +146,7 @@ define([
       airTime=(currentAirTime-_this.startAirTime)/1000,
       newY=_this.vY0*airTime - _this.g * airTime * airTime / 2;
     if(newY>=0){
-      _this.draw(newY);
+      _this.draw(newY, 'air');
       w.requestAnimationFrame(function(){
         _this.changeAirPos();
       });
@@ -139,7 +159,7 @@ define([
     var _this=this;
     clearTimeout(_this.actionTimer);
     _this.line='ground';
-    _this.draw(-50);
+    _this.draw(-50, 'ground');
     _this.speed*=0.8;
   };
 
@@ -156,7 +176,7 @@ define([
         _this.drawHit();
         break;
       default:
-        if(_this.line=='ground'){
+        if(_this.line=='normal'){
           _this.startSpeedUpTime=null;
           if(!_this.isHit){
             _this.startSpeedUp();

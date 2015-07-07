@@ -29,8 +29,9 @@ define([
       var new_line=[],
         node_offset,
         node_info,
-        node_draw_info={};
-      if(_this.option.lineInfo[i]){
+        node_draw_info={},
+        line_info;
+      if(line_info=_this.option.lineInfo[i]){
         while(line.length){
           node_info=line.splice(0,1)[0];
           node_draw_info={};
@@ -44,16 +45,32 @@ define([
             if(node_info.offset<=_this.offset + _this.canvas.width){
               switch(node_info.type){
                 case 2://gold
-                  _this.ctx.fillStyle='gold';
                   if(i==0){
                     node_draw_info.y -= 50;
                   }
                   break;
                 case 1:
                 default:
-                  _this.ctx.fillStyle='#000';
               }
-              _this.ctx.fillRect(node_draw_info.x, node_draw_info.y, node_draw_info.w, node_draw_info.h);
+              node_draw_info.img=_this.option.nodeInfo[node_info.type][i];
+              if(!node_draw_info.img.step && node_draw_info.img.step!=0){
+                node_draw_info.img.step=0;
+              }
+              node_draw_info.img.step %= node_draw_info.img.stepCount;
+              node_draw_info.y -= node_draw_info.img.height;
+              node_draw_info.w=node_draw_info.img.width;
+              node_draw_info.h=node_draw_info.img.height;
+              _this.ctx.drawImage(
+                node_draw_info.img.img,
+                0,
+                node_draw_info.img.height * node_draw_info.img.step,
+                node_draw_info.img.width,
+                node_draw_info.img.height,
+                node_draw_info.x,
+                node_draw_info.y,
+                node_draw_info.img.width,
+                node_draw_info.img.height
+              );
               _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
               if(!_this.checkHit(i, node_draw_info)){
                 new_line.push(node_info);
@@ -67,18 +84,6 @@ define([
         console.log(new_line.length);
       }
     });
-
-    // currentPoint=Math.round(currentPoint);
-    // _this.ctx.translate(0, 0);
-    // _this.ctx.beginPath();
-    // _this.ctx.strokeStyle='#000';
-    // while(currentPoint<_this.canvas.width){
-    //   _this.ctx.moveTo(currentPoint, 0);
-    //   _this.ctx.lineTo(currentPoint, _this.canvas.height);
-    //   currentPoint+=_this.gap;
-    // }
-    // _this.ctx.stroke();
-    // _this.ctx.closePath();
   };
 
   Path.prototype.addNode=function(lineIndex, offset, type){

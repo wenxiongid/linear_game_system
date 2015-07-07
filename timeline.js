@@ -19,22 +19,28 @@ define([
 
   TimeLine.prototype.start=function(){
     var _this=this;
-    _this.startTime=(new Date()).getTime()-_this.timeOffset;
-    _this.status='running';
-    _this.updateTime();
+    if(_this.status!='running'){
+      _this.startTime=(new Date()).getTime()-_this.timeOffset;
+      _this.status='running';
+      _this.updateTime();
+    }
   };
 
   TimeLine.prototype.stop=function(){
     var _this=this;
-    window.cancelAnimationFrame(_this.runningTimer);
-    _this.status='stop';
-    _this.timeOffset=0;
+    if(_this.status=='running'){
+      window.cancelAnimationFrame(_this.runningTimer);
+      _this.status='stop';
+      _this.timeOffset=0;
+    }
   };
 
   TimeLine.prototype.pause=function(){
     var _this=this;
-    window.cancelAnimationFrame(_this.runningTimer);
-    _this.status='paused';
+    if(_this.status=='running'){
+      window.cancelAnimationFrame(_this.runningTimer);
+      _this.status='paused';
+    }
   };
 
   TimeLine.prototype.updateTime=function(){

@@ -28,8 +28,6 @@ requirejs([
 
   var myImgLoader=new ImgLoader();
 
-  
-
   $(function(){
     timeline=new TimeLine();
     var stageHeight=600,
@@ -92,27 +90,46 @@ requirejs([
           case 1:
           default:
             _this.speed=0;
-          _this.action('hit');
-          setTimeout(function(){
-            _this.startSpeedUpTime=null;
-            _this.action('normal');
-            _this.speed=0;
-            _this.startSpeedUp();
-          }, 100);
+            _this.isHit=true;
+            _this.action('hit');
+            setTimeout(function(){
+              _this.startSpeedUpTime=null;
+              _this.isHit=false;
+              _this.action('normal');
+              _this.speed=0;
+              _this.startSpeedUp();
+            }, 1000);
         }
       };
 
       myCharater.action('normal');
     };
 
+    var update_air_node_step=function(){
+      myPath.option.nodeInfo[1][0].step++;
+      setTimeout(update_air_node_step, 500);
+    };
+
     $.when(
       myImgLoader.load('img/stand.png'),
       myImgLoader.load('img/walk.png'),
-      myImgLoader.load('img/run.png')
+      myImgLoader.load('img/run.png'),
+      myImgLoader.load('img/jump.png'),
+      myImgLoader.load('img/slide.png'),
+      myImgLoader.load('img/hit.png'),
+      myImgLoader.load('img/gold.png'),
+      myImgLoader.load('img/a_node.png'),
+      myImgLoader.load('img/g_node.png')
     ).done(function(
       standImg,
       walkImg,
-      runImg
+      runImg,
+      jumpImg,
+      slideImg,
+      hitImg,
+      goldImg,
+      airNodeImg,
+      groundNodeImg
     ){
       myCharater=new Character(charater, {
         standImg: {
@@ -132,18 +149,77 @@ requirejs([
           width: 161,
           height: 241,
           stepCount: 4
+        },
+        jumpImg: {
+          img: jumpImg,
+          width: 132,
+          height: 195,
+          stepCount: 1
+        },
+        slideImg: {
+          img: slideImg,
+          width: 231,
+          height: 179,
+          stepCount: 1
+        },
+        hitImg: {
+          img: hitImg,
+          width: 221,
+          height: 172,
+          stepCount: 1
         }
       });
       myPath=new Path(stage, myCharater, {
         lineInfo: [{
-          y: 350
+          y: 380
         },{
-          y: 400
-        }]
+          y: 540
+        }],
+        nodeInfo: {
+          1: [{
+            img: airNodeImg,
+            width: 102,
+            height: 116,
+            stepCount: 2
+          }, {
+            img: groundNodeImg,
+            width: 73,
+            height: 116,
+            stepCount: 1
+          }],
+          2: [{
+            img: goldImg,
+            width: 56,
+            height: 68,
+            stepCount: 1
+          }, {
+            img: goldImg,
+            width: 56,
+            height: 68,
+            stepCount: 1
+          }]
+        }
       });
+      update_air_node_step();
 
       charater_path_init();
     });
+
+    var last_offset=0,
+      $worldBg=$('#worldBg'),
+      $laneBg=$('#laneBg'),
+      oWorldWidth=0;
+
+    var isBgInited=false,
+      initBg=function(windowWidth){
+        if(!isBgInited){
+          isBgInited=true;
+        }
+        oWorldWidth=2 * 1200 * windowWidth / 689;
+        $worldBg.css({
+          'width': oWorldWidth
+        });
+      };
 
     stage.height=stageHeight;
     charater.height=stageHeight;
@@ -166,11 +242,8 @@ requirejs([
       if(myCharater && myCharater.action){
         myCharater.action('normal');
       }
+      initBg(windowW);
     }).trigger('resize');
-
-    var last_offset=0,
-      $worldBg=$('#worldBg'),
-      $laneBg=$('#laneBg');
 
     timeline.bind('timeUpdate', function(timeOffset){
       var current_d_offset=timeOffset-last_offset;
@@ -178,7 +251,7 @@ requirejs([
       var world_offset=myPath.offset*0.1,
         lane_offset=myPath.offset;
       $worldBg.css({
-        'width': windowW + world_offset,
+        'width': oWorldWidth + world_offset,
         'transform': 'translate3d('+ -world_offset +'px, 0, 0)'
       });
       $laneBg.css({
@@ -199,7 +272,7 @@ requirejs([
         myCharater.action('ground');
         setTimeout(function(){
           myCharater.action('normal');
-        }, 500);
+        }, 1000);
       }
     });
     $('#pauseStartBtn').on(btnEvent, function(e){
