@@ -82,7 +82,6 @@ requirejs([
       };
       myCharater.hit=function(type){
         var _this=this;
-        // console.log('hit: ' + myPath.offset+ ', type: '+type);
         switch(type){
           case 2:
             updateResult(++getPoint);
@@ -98,7 +97,7 @@ requirejs([
               _this.action('normal');
               _this.speed=0;
               _this.startSpeedUp();
-            }, 1000);
+            }, 600);
         }
       };
 

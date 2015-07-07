@@ -81,7 +81,6 @@ define([
           }
         }
         _this.line[i]=new_line;
-        console.log(new_line.length);
       }
     });
   };
