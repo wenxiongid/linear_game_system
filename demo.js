@@ -97,7 +97,7 @@ requirejs([
               _this.action('normal');
               _this.speed=0;
               _this.startSpeedUp();
-            }, 600);
+            }, 500);
         }
       };
 
