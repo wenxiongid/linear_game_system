@@ -46,7 +46,7 @@ define([
               switch(node_info.type){
                 case 2://gold
                   if(i==0){
-                    node_draw_info.y -= 50;
+                    node_draw_info.y -= 80;
                   }
                   break;
                 case 1:

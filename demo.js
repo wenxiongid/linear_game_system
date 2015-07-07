@@ -88,16 +88,19 @@ requirejs([
             break;
           case 1:
           default:
-            _this.speed=0;
-            _this.isHit=true;
-            _this.action('hit');
             setTimeout(function(){
-              _this.startSpeedUpTime=null;
-              _this.isHit=false;
-              _this.action('normal');
               _this.speed=0;
-              _this.startSpeedUp();
-            }, 500);
+              _this.isHit=true;
+              _this.action('hit');
+              setTimeout(function(){
+                _this.startSpeedUpTime=null;
+                _this.isHit=false;
+                _this.action('normal');
+                _this.speed=0;
+                _this.startSpeedUp();
+              }, 1000);
+            }, 10);
+            
         }
       };
 
@@ -271,7 +274,7 @@ requirejs([
         myCharater.action('ground');
         setTimeout(function(){
           myCharater.action('normal');
-        }, 1000);
+        }, 600);
       }
     });
     $('#pauseStartBtn').on(btnEvent, function(e){
