@@ -51,7 +51,7 @@ requirejs([
           startGridOffset=Math.ceil((_this.offset+_this.canvas.width) / 50) * 50,
           current_node;
         if(addLineIndex<_this.lineCount){
-          current_node=_this.lastNode+(15+Math.floor(Math.random()*6)) * 50;
+          current_node=_this.lastNode+(18+Math.floor(Math.random()*6)) * 50;
           if(current_node<startGridOffset){
             current_node=startGridOffset;
           }
@@ -138,37 +138,73 @@ requirejs([
           img: standImg,
           width: 132,
           height: 218,
-          stepCount: 1
+          stepCount: 1,
+          hitRect: {
+            offsetX: 0,
+            offsetY: 0,
+            w: 132,
+            h: 218
+          }
         },
         walkImg: {
           img: walkImg,
           width: 132,
           height: 220,
-          stepCount: 4
+          stepCount: 4,
+          hitRect: {
+            offsetX: 0,
+            offsetY: 0,
+            w: 132,
+            h: 220
+          }
         },
         runImg: {
           img: runImg,
           width: 161,
           height: 241,
-          stepCount: 4
+          stepCount: 4,
+          hitRect: {
+            offsetX: 15,
+            offsetY: 15,
+            w: 134,
+            h: 220
+          }
         },
         jumpImg: {
           img: jumpImg,
           width: 132,
           height: 195,
-          stepCount: 1
+          stepCount: 1,
+          hitRect: {
+            offsetX: 0,
+            offsetY: 0,
+            w: 132,
+            h: 195
+          }
         },
         slideImg: {
           img: slideImg,
           width: 231,
           height: 179,
-          stepCount: 1
+          stepCount: 1,
+          hitRect: {
+            offsetX: 31,
+            offsetY: 18,
+            w: 199,
+            h: 153
+          }
         },
         hitImg: {
           img: hitImg,
           width: 221,
           height: 172,
-          stepCount: 1
+          stepCount: 1,
+          hitRect: {
+            offsetX: 0,
+            offsetY: 27,
+            w: 205,
+            h: 135
+          }
         }
       });
       myPath=new Path(stage, myCharater, {

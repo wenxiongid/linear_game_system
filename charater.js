@@ -19,7 +19,7 @@ define([
       accelerate: 0.1,
       hitPoint: 250
     }, option || {});
-    _this.vY0=300;
+    _this.vY0=350;
     _this.g=450;
     _this.speed=0;
     _this.actionTimer=0;
@@ -102,6 +102,19 @@ define([
       charaterImg.step=0;
     }
     charaterImg.step %= charaterImg.stepCount;
+    _this.hitRect={
+      x: _this.option.hitPoint-charaterImg.width + charaterImg.hitRect.offsetX,
+      y: 320-y + charaterImg.hitRect.offsetY,
+      w: charaterImg.hitRect.w,
+      h: charaterImg.hitRect.h
+    };
+    // _this.ctx.fillStyle='#900';
+    // _this.ctx.fillRect(
+    //   _this.hitRect.x,
+    //   _this.hitRect.y,
+    //   _this.hitRect.w,
+    //   _this.hitRect.h
+    // );
     _this.ctx.drawImage(
       charaterImg.img,
       0,
@@ -158,9 +171,10 @@ define([
   Charater.prototype.ground=function(){
     var _this=this;
     clearTimeout(_this.actionTimer);
+    _this.isUppingSpeed=false;
     _this.line='ground';
     _this.draw(-50, 'ground');
-    _this.speed*=0.8;
+    _this.speed*=0.9;
   };
 
   Charater.prototype.action=function(type){

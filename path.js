@@ -24,7 +24,7 @@ define([
     _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
     _this.offset=offset;
     _this.ctx.lineWidth=5;
-    _this.charaterImgData=_this.charater.ctx.getImageData(0, 0, _this.charater.canvas.width, _this.charater.canvas.height).data;
+    // _this.charaterImgData=_this.charater.ctx.getImageData(0, 0, _this.charater.canvas.width, _this.charater.canvas.height).data;
     $.each(_this.line, function(i, line){
       var new_line=[],
         node_offset,
@@ -60,6 +60,12 @@ define([
               node_draw_info.y -= node_draw_info.img.height;
               node_draw_info.w=node_draw_info.img.width;
               node_draw_info.h=node_draw_info.img.height;
+              // _this.ctx.fillRect(
+              //   node_draw_info.x,
+              //   node_draw_info.y,
+              //   node_draw_info.w,
+              //   node_draw_info.h
+              // );
               _this.ctx.drawImage(
                 node_draw_info.img.img,
                 0,
@@ -68,11 +74,11 @@ define([
                 node_draw_info.img.height,
                 node_draw_info.x,
                 node_draw_info.y,
-                node_draw_info.img.width,
-                node_draw_info.img.height
+                node_draw_info.w,
+                node_draw_info.h
               );
-              _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
-              if(!_this.checkHit(i, node_draw_info)){
+              // _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
+              if(!_this.checkHit(node_draw_info)){
                 new_line.push(node_info);
               }
             }else{
@@ -105,31 +111,75 @@ define([
   };
 
   // simple check
-  Path.prototype.checkHit=function(lineIndex, node){
-    var _this=this;
-    _this.hitPoint=_this.offset + _this.charater.option.hitPoint;
-    if(node.offset<=_this.hitPoint && node.offset >= _this.hitPoint - 50){
-      switch(lineIndex){
-        case 0:
-        case '0':
-          if(_this.charater.line!='ground'){
-            _this.charater.hit(node.type);
-          }
-          break;
-        case 1:
-        case '1':
-          if(_this.charater.line!='air'){
-            _this.charater.hit(node.type);
-          }
-          break;
-        default:
-          // 
+  Path.prototype.checkHit=function(nodeInfo){
+    var _this=this,
+      hitRect=_this.charater.hitRect,
+      hitRectRange={
+        top: hitRect.y,
+        left: hitRect.x,
+        right: hitRect.x + hitRect.w,
+        bottom: hitRect.y + hitRect.h
+      },
+      nodeRectPoint=[{
+        x: nodeInfo.x,
+        y: nodeInfo.y
+      }, {
+        x: nodeInfo.x,
+        y: nodeInfo.y + nodeInfo.h
+      }, {
+        x: nodeInfo.x + nodeInfo.w,
+        y: nodeInfo.y
+      }, {
+        x: nodeInfo.x + nodeInfo.w,
+        y: nodeInfo.y + nodeInfo.h
+      }],
+      insideCount=0,
+      outsideCount=0,
+      isHit=false;
+    // rect check
+    /*$.each(nodeRectPoint, function(i, point){
+      if(
+        point.x >= hitRectRange.left &&
+        point.x <= hitRectRange.right &&
+        point.y >= hitRectRange.top &&
+        point.y <= hitRectRange.bottom
+      ){
+        insideCount++;
+      }else{
+        outsideCount++;
       }
+    });
+    if(insideCount>0){
+      _this.charater.hit(nodeInfo.type);
+      isHit=true;
+    }*/
+
+    // round check
+    var hitCenter={
+        x: hitRect.x + hitRect.w / 2,
+        y: hitRect.y + hitRect.h / 2
+      },
+      nodeCenter={
+        x: nodeInfo.x + nodeInfo.w / 2,
+        y: nodeInfo.y + nodeInfo.h /2
+      };
+      minDistance=(hitRect.w + hitRect.h) / 4 + (nodeInfo.w + nodeInfo.h) /4;
+    if(
+      Math.pow(
+        Math.pow(hitCenter.x - nodeCenter.x, 2) +
+        Math.pow(hitCenter.y - nodeCenter.y, 2),
+        0.5
+      )<minDistance
+    ){
+      _this.charater.hit(nodeInfo.type);
+      isHit=true;
     }
+
+    return isHit;
   };
 
   // trandition check
-  Path.prototype.checkHit=function(lineIndex, nodeInfo){
+  /*Path.prototype.checkHit=function(nodeInfo){
     var _this=this,
       start_point,
       end_point,
@@ -152,7 +202,7 @@ define([
       _this.charater.hit(nodeInfo.type);
     }
     return isHit;
-  };
+  };*/
 
   return Path;
 });
