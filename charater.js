@@ -164,7 +164,7 @@ define([
         _this.changeAirPos();
       });
     }else{
-      _this.normal();
+      _this.action('normal');
     }
   };
 
@@ -193,11 +193,9 @@ define([
         _this.normal();
         break;
       default:
-        if(_this.line=='normal'){
-          _this.startSpeedUpTime=null;
-          if(!_this.isHit){
-            _this.startSpeedUp();
-          }
+        _this.startSpeedUpTime=null;
+        if(!_this.isHit){
+          _this.startSpeedUp();
         }
         _this.normal();
     }

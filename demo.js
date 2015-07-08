@@ -262,7 +262,8 @@ requirejs([
     stage.height=stageHeight;
     charater.height=stageHeight;
     var windowW=0,
-      canvas_zoom=1;
+      canvas_zoom=1,
+      world_zoom=1;
     $(window).on('resize orientationchange', function(){
       var $this=$(this),
         w=$this.width(),
@@ -272,6 +273,7 @@ requirejs([
       stage.width=newW;
       charater.width=newW;
       canvas_zoom=h/stageHeight;
+      world_zoom=h / 689;
       if(timeline.isInit){
         if(w<h){
           timeline.pause();
@@ -290,8 +292,11 @@ requirejs([
       myPath.draw(myCharater.speed*current_d_offset);
       var world_offset=myPath.offset*0.1,
         lane_offset=myPath.offset * canvas_zoom;
+      while(world_offset>=1277 * world_zoom){
+        world_offset-=1277 * world_zoom;
+      }
       $worldBg.css({
-        'width': oWorldWidth + world_offset,
+        'width': oWorldWidth,
         'transform': 'translate3d('+ -world_offset +'px, 0, 0)'
       });
       $laneBg.css({
