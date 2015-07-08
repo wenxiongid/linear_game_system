@@ -31,24 +31,26 @@ requirejs([
   $(function(){
     timeline=new TimeLine();
     var stageHeight=600,
-      stage=document.getElementById('gameStage'),
-      charater=document.getElementById('charater'),
+      // stage=document.getElementById('gameStage'),
+      // charater=document.getElementById('charater'),
       timeline=new TimeLine(),
       myCharater,
       myPath,
-      getPoint=0;
+      getPoint=0,
+      $charater=$('.charaterC'),
+      $nodeWrapper=$('#nodeWrapper');
 
     var charater_path_init=function(){
       myPath.nodeFrequence=0.2;// (0, 1]
       myPath.goldFrequence=0.5;// [0, 1)
       myPath.lineCount=2;
-      myPath.lastNode=Math.ceil(myPath.canvas.width / 50) * 50;
+      myPath.lastNode=Math.ceil(myPath.width / 50) * 50;
       myPath.lastGoldNode=myPath.lastNode;
       myPath.addRandomNode=function(){
         var _this=this,
           addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.nodeFrequence)),
           anotherLineIndex,
-          startGridOffset=Math.ceil((_this.offset+_this.canvas.width) / 50) * 50,
+          startGridOffset=Math.ceil((_this.offset+_this.width) / 50) * 50,
           current_node;
         if(addLineIndex<_this.lineCount){
           current_node=_this.lastNode+(18+Math.floor(Math.random()*6)) * 50;
@@ -133,7 +135,8 @@ requirejs([
       airNodeImg,
       groundNodeImg
     ){
-      myCharater=new Character(charater, {
+      myCharater=new Character($charater, {
+        zoom: canvas_zoom,
         standImg: {
           img: standImg,
           width: 132,
@@ -207,7 +210,9 @@ requirejs([
           }
         }
       });
-      myPath=new Path(stage, myCharater, {
+      myPath=new Path($nodeWrapper, myCharater, {
+        zoom: canvas_zoom,
+        width: windowW / canvas_zoom,
         lineInfo: [{
           y: 380
         },{
@@ -259,8 +264,8 @@ requirejs([
         });
       };
 
-    stage.height=stageHeight;
-    charater.height=stageHeight;
+    // stage.height=stageHeight;
+    // charater.height=stageHeight;
     var windowW=0,
       canvas_zoom=1,
       world_zoom=1;
@@ -270,10 +275,13 @@ requirejs([
         h=$this.height(),
         newW=w/h*stageHeight;
       windowW=w;
-      stage.width=newW;
-      charater.width=newW;
-      canvas_zoom=h/stageHeight;
+      // stage.width=newW;
+      // charater.width=newW;
+      canvas_zoom=h / stageHeight;
       world_zoom=h / 689;
+      $charater.css({
+        'transform': 'scale('+canvas_zoom+')'
+      });
       if(timeline.isInit){
         if(w<h){
           timeline.pause();
@@ -282,7 +290,12 @@ requirejs([
         }
       }
       if(myCharater && myCharater.action){
+        myCharater.zoom=canvas_zoom;
         myCharater.action('normal');
+      }
+      if(myPath){
+        myPath.zoom=canvas_zoom;
+        myPath.width=windowW / canvas_zoom;
       }
       initBg(windowW);
     }).trigger('resize');

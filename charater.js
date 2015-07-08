@@ -9,18 +9,18 @@ define([
   Helper,
   $
 ){
-  var Charater=function(canvas, option){
+  var Charater=function(el, option){
     var _this=this;
-    _this.canvas=canvas;
-    _this.ctx=_this.canvas.getContext('2d');
+    _this.$el=$(el);
     _this.line='normal';
     _this.option=$.extend({
       speedMax: 0.5,
       accelerate: 0.1,
       hitPoint: 250
     }, option || {});
+    _this.zoom=_this.option.zoom;
     _this.vY0=350;
-    _this.g=450;
+    _this.g=500;
     _this.speed=0;
     _this.actionTimer=0;
   };
@@ -61,8 +61,6 @@ define([
     var _this=this,
       charaterImg;
     _this.charaterY=y;
-    _this.ctx.translate(0, 0);
-    _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
     if(_this.isHit){
       charaterImg=_this.option.hitImg;
       if(_this.line=='ground'){
@@ -103,29 +101,30 @@ define([
     }
     charaterImg.step %= charaterImg.stepCount;
     _this.hitRect={
-      x: _this.option.hitPoint-charaterImg.width + charaterImg.hitRect.offsetX,
-      y: 320-y + charaterImg.hitRect.offsetY,
-      w: charaterImg.hitRect.w,
-      h: charaterImg.hitRect.h
+      x: (_this.option.hitPoint-charaterImg.width + charaterImg.hitRect.offsetX) * _this.zoom,
+      y: (320-y + charaterImg.hitRect.offsetY) * _this.zoom,
+      w: charaterImg.hitRect.w * _this.zoom,
+      h: charaterImg.hitRect.h * _this.zoom
     };
-    // _this.ctx.fillStyle='#900';
-    // _this.ctx.fillRect(
-    //   _this.hitRect.x,
-    //   _this.hitRect.y,
-    //   _this.hitRect.w,
-    //   _this.hitRect.h
+    _this.$el.css({
+      'background-image': 'url('+charaterImg.img.src+')',
+      'background-position': '0px -'+ charaterImg.step*charaterImg.height+'px',
+      width: charaterImg.width,
+      height: charaterImg.height,
+      top: (320-y) * _this.zoom,
+      left: (_this.option.hitPoint-charaterImg.width) * _this.zoom
+    });
+    // _this.ctx.drawImage(
+    //   charaterImg.img,
+    //   0,
+    //   charaterImg.step*charaterImg.height,
+    //   charaterImg.width,
+    //   charaterImg.height,
+    //   _this.option.hitPoint-charaterImg.width,
+    //   320-y,
+    //   charaterImg.width,
+    //   charaterImg.height
     // );
-    _this.ctx.drawImage(
-      charaterImg.img,
-      0,
-      charaterImg.step*charaterImg.height,
-      charaterImg.width,
-      charaterImg.height,
-      _this.option.hitPoint-charaterImg.width,
-      320-y,
-      charaterImg.width,
-      charaterImg.height
-    );
     charaterImg.step++;
   };
 

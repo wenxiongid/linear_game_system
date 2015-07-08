@@ -3,46 +3,47 @@ define([
 ], function(
   $
 ){
-  var Path=function(canvas, charater, option){
+  var Path=function(wrapper, charater, option){
     var _this=this;
-    _this.canvas=canvas;
+    _this.$wrapper=$(wrapper);
     _this.charater=charater;
     _this.line={};
-    _this.width=canvas.width;
-    _this.gap=1000;//test
-    _this.ctx=_this.canvas.getContext('2d');
+    // _this.width=canvas.width;
     _this.offset=0;
     _this.option=$.extend({
-      lineInfo:[]
+      lineInfo:[],
+      zoom: 1
     }, option || {});
+    _this.zoom=_this.option.zoom;
+    _this.width=_this.option.width;
   };
 
   Path.prototype.draw=function(d_offset){
     var _this=this,
-      offset=_this.offset+d_offset,
-      currentPoint=-(offset % _this.gap) + _this.gap;
-    _this.ctx.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
+      offset=_this.offset+d_offset;
     _this.offset=offset;
-    _this.ctx.lineWidth=5;
     // _this.charaterImgData=_this.charater.ctx.getImageData(0, 0, _this.charater.canvas.width, _this.charater.canvas.height).data;
     $.each(_this.line, function(i, line){
       var new_line=[],
         node_offset,
         node_info,
         node_draw_info={},
-        line_info;
+        line_info,
+        node_hit_info={};
       if(line_info=_this.option.lineInfo[i]){
         while(line.length){
           node_info=line.splice(0,1)[0];
           node_draw_info={};
           node_draw_info.x=Math.round(node_info.offset- _this.offset);
           node_draw_info.y=Math.round(_this.option.lineInfo[i].y);
-          node_draw_info.w=20;
-          node_draw_info.h=20;
           node_draw_info.type=node_info.type;
+          if(!node_info.$el){
+            node_info.$el=$('<div class="node"></div>');
+          }
           
           if(node_info.offset>=_this.offset){
-            if(node_info.offset<=_this.offset + _this.canvas.width){
+            if(node_info.offset<=_this.offset + _this.width){
+              node_info.$el.appendTo(_this.$wrapper);
               switch(node_info.type){
                 case 2://gold
                   if(i==0){
@@ -66,24 +67,46 @@ define([
               //   node_draw_info.w,
               //   node_draw_info.h
               // );
-              _this.ctx.drawImage(
-                node_draw_info.img.img,
-                0,
-                node_draw_info.img.height * node_draw_info.img.step,
-                node_draw_info.img.width,
-                node_draw_info.img.height,
-                node_draw_info.x,
-                node_draw_info.y,
-                node_draw_info.w,
-                node_draw_info.h
-              );
+              node_info.$el.css({
+                'background-image': 'url('+node_draw_info.img.img.src+')',
+                'background-position': '0px -'+node_draw_info.img.height * node_draw_info.img.step+'px',
+                width: node_draw_info.w,
+                height: node_draw_info.h,
+                top: node_draw_info.y * _this.zoom,
+                left: node_draw_info.x * _this.zoom,
+                transform: 'scale('+_this.zoom+')'
+              });
+              node_hit_info={
+                x: node_draw_info.x * _this.zoom,
+                y: node_draw_info.y * _this.zoom,
+                w: node_draw_info.w * _this.zoom,
+                h: node_draw_info.h * _this.zoom,
+                type: node_info.type
+              };
+              // _this.ctx.drawImage(
+              //   node_draw_info.img.img,
+              //   0,
+              //   node_draw_info.img.height * node_draw_info.img.step,
+              //   node_draw_info.img.width,
+              //   node_draw_info.img.height,
+              //   node_draw_info.x,
+              //   node_draw_info.y,
+              //   node_draw_info.w,
+              //   node_draw_info.h
+              // );
               // _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
-              if(!_this.checkHit(node_draw_info)){
+              if(_this.checkHit(node_hit_info)){
+                node_info.$el.remove();
+                node_info.$el=null;
+              }else{
                 new_line.push(node_info);
               }
             }else{
               new_line.push(node_info);
             }
+          }else{
+            node_info.$el.remove();
+            node_info.$el=null;
           }
         }
         _this.line[i]=new_line;
@@ -136,6 +159,7 @@ define([
       insideCount=0,
       outsideCount=0,
       isHit=false;
+
     // rect check
     /*$.each(nodeRectPoint, function(i, point){
       if(
