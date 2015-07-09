@@ -335,14 +335,14 @@ requirejs([
 
     $('#jumpBtn').on(btnEvent, function(e){
       e.preventDefault();
-      if(myCharater.line=='normal'){
+      if(myCharater.line=='normal' && !myCharater.isHit){
         myCharater.action('air');
       }
       return false;
     });
     $('#slideBtn').on(btnEvent, function(e){
       e.preventDefault();
-      if(myCharater.line=='normal'){
+      if(myCharater.line=='normal' && !myCharater.isHit){
         myCharater.action('ground');
         setTimeout(function(){
           myCharater.action('normal');
