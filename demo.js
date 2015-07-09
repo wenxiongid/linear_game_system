@@ -334,19 +334,24 @@ requirejs([
     });
 
     $('#jumpBtn').on(btnEvent, function(e){
+      e.preventDefault();
       if(myCharater.line=='normal'){
         myCharater.action('air');
       }
+      return false;
     });
     $('#slideBtn').on(btnEvent, function(e){
+      e.preventDefault();
       if(myCharater.line=='normal'){
         myCharater.action('ground');
         setTimeout(function(){
           myCharater.action('normal');
         }, 800);
       }
+      return false;
     });
     $('#pauseStartBtn').on(btnEvent, function(e){
+      e.preventDefault();
       switch(timeline.status){
         case 'running':
           $(this).text('run');
@@ -358,13 +363,16 @@ requirejs([
           $(this).text('pause');
           timeline.start();
       }
+      return false;
     });
 
     $('#startBtn').on(btnEvent, function(e){
+      e.preventDefault();
       $('#mask').hide();
       timeline.isInit=true;
       timeline.start();
       myCharater.action('normal');
+      return false;
     });
 
     $(document).on('touchmove', function(e){
