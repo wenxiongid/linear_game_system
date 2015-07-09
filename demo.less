@@ -1,3 +1,5 @@
+@import 'bower_components/lesshat/build/lesshat-prefixed.less';
+
 html,
 body,
 #viewport,
@@ -10,6 +12,8 @@ body,
 #viewport{
   position: relative;
 }
+.lh-keyframes(~'flynode, 0%{background-position: 0 0px;} 49.99%{background-position: 0 0px;} 50%{background-position: 0 -116px;} 100%{background-position: 0 -116px;}');
+
 #nodeWrapper{
   position: absolute;
   width: 100%;
@@ -18,7 +22,26 @@ body,
   left: 0;
   .node{
     position: absolute;
-    transform-origin: 0 0;
+    top: 0;
+    left: 0;
+    .lh-transform-origin(0 0);
+    background-repeat: no-repeat;
+  }
+  .air-node{
+    background-image: url('img/a_node.png');
+    .lh-animation(~'flynode 1s infinite linear');
+    width: 102px;
+    height: 116px;
+  }
+  .ground-node{
+    background-image: url('img/g_node.png');
+    width: 73px;
+    height: 116px;
+  }
+  .gold-node{
+    background-image: url('img/gold.png');
+    width: 56px;
+    height: 68px;
   }
 }
 
@@ -34,10 +57,47 @@ body,
   top: 0;
   left: 0;
 }
+.lh-keyframes(~'walk, 0%{background-position: 0 0px;} 24.99%{background-position: 0 0px;} 25%{background-position: 0 -220px;} 49.99%{background-position: 0 -220px;} 50%{background-position: 0 -440px;} 74.99%{background-position: 0 -440px;} 75%{background-position: 0 -660px;} 100%{background-position: 0 -660px;}');
+.lh-keyframes(~'run, 0%{background-position: 0 0px;} 24.99%{background-position: 0 0px;} 25%{background-position: 0 -241px;} 49.99%{background-position: 0 -241px;} 50%{background-position: 0 -482px;} 74.99%{background-position: 0 -482px;} 75%{background-position: 0 -723px;} 100%{background-position: 0 -723px;}');
+
 .charaterC{
   position: absolute;
+  top: 0;
+  left: 0;
   background-repeat: no-repeat;
-  transform-origin: 0 0;
+  .lh-transform-origin(0 0);
+  &.stand{
+    background-image: url('img/stand.png');
+    width: 132px;
+    height: 218px;
+  }
+  &.walk{
+    background-image: url('img/walk.png');
+    width: 132px;
+    height: 220px;
+    .lh-animation(~'walk 800ms infinite linear');
+  }
+  &.run{
+    background-image: url('img/run.png');
+    width: 161px;
+    height: 241px;
+    .lh-animation(~'run 600ms infinite linear');
+  }
+  &.jump{
+    background-image: url('img/jump.png'); 
+    width: 132px;
+    height: 195px;
+  }
+  &.slide{
+    background-image: url('img/slide.png');
+    width: 231px;
+    height: 179px;
+  }
+  &.hit{
+    background-image: url('img/hit.png');
+    width: 221px;
+    height: 172px;
+  }
 }
 #jumpBtn,
 #slideBtn{

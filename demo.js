@@ -214,9 +214,17 @@ requirejs([
         zoom: canvas_zoom,
         width: windowW / canvas_zoom,
         lineInfo: [{
-          y: 380
+          y: 380,
+          nodeClass: {
+            1: 'air-node',
+            2: 'gold-node'
+          }
         },{
-          y: 540
+          y: 540,
+          nodeClass: {
+            1: 'ground-node',
+            2: 'gold-node'
+          }
         }],
         nodeInfo: {
           1: [{
@@ -279,9 +287,6 @@ requirejs([
       // charater.width=newW;
       canvas_zoom=h / stageHeight;
       world_zoom=h / 689;
-      $charater.css({
-        'transform': 'scale('+canvas_zoom+')'
-      });
       if(timeline.isInit){
         if(w<h){
           timeline.pause();
@@ -310,11 +315,19 @@ requirejs([
       }
       $worldBg.css({
         'width': oWorldWidth,
-        'transform': 'translate3d('+ -world_offset +'px, 0, 0)'
+        '-webkit-transform':'translate3d('+ -world_offset +'px, 0,0)',
+        '-moz-transform':'translate3d('+ -world_offset +'px, 0,0)',
+        '-o-transform':'translate3d('+ -world_offset +'px, 0,0)',
+        '-ms-transform':'translate3d('+ -world_offset +'px, 0,0)',
+        'transform':'translate3d('+ -world_offset +'px, 0,0)'
       });
       $laneBg.css({
         'width': windowW + lane_offset,
-        'transform': 'translate3d('+ -lane_offset +'px, 0, 0)'
+        '-webkit-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+        '-moz-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+        '-o-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+        '-ms-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+        'transform':'translate3d('+ -lane_offset +'px, 0,0)'
       });
       last_offset=timeOffset;
       myPath.addRandomNode();

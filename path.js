@@ -29,7 +29,8 @@ define([
         node_info,
         node_draw_info={},
         line_info,
-        node_hit_info={};
+        node_hit_info={},
+        node_class='';
       if(line_info=_this.option.lineInfo[i]){
         while(line.length){
           node_info=line.splice(0,1)[0];
@@ -37,8 +38,9 @@ define([
           node_draw_info.x=Math.round(node_info.offset- _this.offset);
           node_draw_info.y=Math.round(_this.option.lineInfo[i].y);
           node_draw_info.type=node_info.type;
+          node_draw_info.className=line_info.nodeClass[node_info.type];
           if(!node_info.$el){
-            node_info.$el=$('<div class="node"></div>');
+            node_info.$el=$('<div class="node '+ node_draw_info.className+'"></div>');
           }
           
           if(node_info.offset>=_this.offset){
@@ -68,13 +70,11 @@ define([
               //   node_draw_info.h
               // );
               node_info.$el.css({
-                'background-image': 'url('+node_draw_info.img.img.src+')',
-                'background-position': '0px -'+node_draw_info.img.height * node_draw_info.img.step+'px',
-                width: node_draw_info.w,
-                height: node_draw_info.h,
-                top: node_draw_info.y * _this.zoom,
-                left: node_draw_info.x * _this.zoom,
-                transform: 'scale('+_this.zoom+')'
+                '-webkit-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+                '-moz-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+                '-o-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+                '-ms-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+                'transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)'
               });
               node_hit_info={
                 x: node_draw_info.x * _this.zoom,

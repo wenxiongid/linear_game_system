@@ -59,9 +59,11 @@ define([
 
   Charater.prototype.draw=function(y, type){
     var _this=this,
-      charaterImg;
+      charaterImg,
+      charaterClassName;
     _this.charaterY=y;
     if(_this.isHit){
+      charaterClassName='hit';
       charaterImg=_this.option.hitImg;
       if(_this.line=='ground'){
         y=-57;
@@ -71,13 +73,16 @@ define([
     }else{
       switch(type){
         case 'air':
+          charaterClassName='jump';
           charaterImg=_this.option.jumpImg;
           break;
         case 'ground':
+          charaterClassName='slide';
           charaterImg=_this.option.slideImg;
           y-=10;
           break;
         case 'hit':
+          charaterClassName='hit';
           charaterImg=_this.option.hitImg;
           break;
         case 'normal':
@@ -85,13 +90,16 @@ define([
         default:
           switch(true){
             case _this.speed>0.4:
+              charaterClassName='run';
               charaterImg=_this.option.runImg;
               y+=21;
               break;
             case _this.speed>0 && _this.speed<=0.4:
+              charaterClassName='walk';
               charaterImg=_this.option.walkImg;
               break;
             default:
+              charaterClassName='stand';
               charaterImg=_this.option.standImg;
           }
       }
@@ -106,14 +114,16 @@ define([
       w: charaterImg.hitRect.w * _this.zoom,
       h: charaterImg.hitRect.h * _this.zoom
     };
-    _this.$el.css({
-      'background-image': 'url('+charaterImg.img.src+')',
-      'background-position': '0px -'+ charaterImg.step*charaterImg.height+'px',
-      width: charaterImg.width,
-      height: charaterImg.height,
-      top: (320-y) * _this.zoom,
-      left: (_this.option.hitPoint-charaterImg.width) * _this.zoom
-    });
+    _this.$el
+      .removeClass('jump slide hit run walk stand')
+      .addClass(charaterClassName)
+      .css({
+        '-webkit-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
+        '-moz-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
+        '-o-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
+        '-ms-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
+        'transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)'
+      });
     // _this.ctx.drawImage(
     //   charaterImg.img,
     //   0,
