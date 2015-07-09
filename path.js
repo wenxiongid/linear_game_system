@@ -22,6 +22,14 @@ define([
     var _this=this,
       offset=_this.offset+d_offset;
     _this.offset=offset;
+    _this.$wrapper.css({
+      width: (_this.width + _this.offset) * _this.zoom,
+      '-webkit-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+      '-moz-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+      '-o-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+      '-ms-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+      'transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',      
+    });
     // _this.charaterImgData=_this.charater.ctx.getImageData(0, 0, _this.charater.canvas.width, _this.charater.canvas.height).data;
     $.each(_this.line, function(i, line){
       var new_line=[],
@@ -39,13 +47,12 @@ define([
           node_draw_info.y=Math.round(_this.option.lineInfo[i].y);
           node_draw_info.type=node_info.type;
           node_draw_info.className=line_info.nodeClass[node_info.type];
-          if(!node_info.$el){
-            node_info.$el=$('<div class="node '+ node_draw_info.className+'"></div>');
-          }
+          // if(!node_info.$el){
+          //   node_info.$el=$('<div class="node '+ node_draw_info.className+'"></div>');
+          // }
           
           if(node_info.offset>=_this.offset){
             if(node_info.offset<=_this.offset + _this.width){
-              node_info.$el.appendTo(_this.$wrapper);
               switch(node_info.type){
                 case 2://gold
                   if(i==0){
@@ -69,13 +76,25 @@ define([
               //   node_draw_info.w,
               //   node_draw_info.h
               // );
-              node_info.$el.css({
-                '-webkit-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-                '-moz-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-                '-o-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-                '-ms-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-                'transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)'
-              });
+              if(!node_info.$el){
+                node_info.$el=$('<div class="node '+ node_draw_info.className+'"></div>');
+                node_info.$el.appendTo(_this.$wrapper).css({
+                  '-webkit-transform':'scale('+_this.zoom+')',
+                  '-moz-transform':'scale('+_this.zoom+')',
+                  '-o-transform':'scale('+_this.zoom+')',
+                  '-ms-transform':'scale('+_this.zoom+')',
+                  'transform':'scale('+_this.zoom+')',
+                  top: node_draw_info.y * _this.zoom,
+                  left: (node_draw_info.x + _this.offset) * _this.zoom
+                });
+              }
+              // node_info.$el.css({
+              //   '-webkit-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+              //   '-moz-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+              //   '-o-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+              //   '-ms-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
+              //   'transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)'
+              // });
               node_hit_info={
                 x: node_draw_info.x * _this.zoom,
                 y: node_draw_info.y * _this.zoom,
