@@ -41,13 +41,14 @@ requirejs([
       $nodeWrapper=$('#nodeWrapper');
 
     var charater_path_init=function(){
-      myPath.nodeFrequence=0.2;// (0, 1]
-      myPath.goldFrequence=0.5;// [0, 1)
+      myPath.nodeFrequence=1;// (0, 1]
+      myPath.goldFrequence=1;// (0, 1]
       myPath.lineCount=2;
-      myPath.lastNode=Math.ceil(myPath.width / 50) * 50;
+      myPath.grid=100;
+      myPath.lastNode=Math.ceil(myPath.width / myPath.grid) * myPath.grid;
       myPath.lastGoldNode=myPath.lastNode;
       myPath.addRandomNode=function(){
-        var _this=this,
+        /*var _this=this,
           addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.nodeFrequence)),
           anotherLineIndex,
           startGridOffset=Math.ceil((_this.offset+_this.width) / 50) * 50,
@@ -80,7 +81,55 @@ requirejs([
               _this.addNode(Math.floor(Math.random()*_this.lineCount), _this.lastGoldNode, 2);
             }
           }
+        }*/
+        var _this=this,
+          startGridOffset=Math.ceil((_this.offset+_this.width) / _this.grid) * _this.grid,
+          goldAddLine=Math.floor(Math.random() * _this.lineCount / _this.goldFrequence),
+          current_gold_node_offset,
+          current_node_offset,
+          node_insert_line_index;
+        if(goldAddLine<_this.lineCount){
+          current_gold_node_offset=_this.lastGoldNode + _this.grid;
+          if(_this.lastGoldNode<startGridOffset){
+            current_gold_node_offset=startGridOffset;
+          }
+          if(current_gold_node_offset<startGridOffset + 12 * _this.grid){
+            _this.lastGoldNode=current_gold_node_offset;
+            _this.addNode(goldAddLine, _this.lastGoldNode, 2);
+          }
         }
+        if(Math.random()<_this.nodeFrequence){
+          current_node_offset= _this.lastNode+(9+Math.floor(Math.random()*3)) * _this.grid;
+          if(current_node_offset<startGridOffset){
+            current_node_offset=startGridOffset;
+          }
+          // if(current_node_offset>startGridOffset + 6 * _this.grid){
+          //   current_node_offset=startGridOffset + 6 * _this.grid;
+          // }
+          
+          $.each(_this.line, function(i, line){
+            var has_position=true;
+            if(i==node_insert_line_index){
+              return true;//continue
+            }
+            $.each(line, function(j, node){
+              if(node.offset==current_node_offset){
+                has_position=false;
+                return false;// break
+              }
+            });
+            if(has_position){
+              node_insert_line_index=i;
+              return false;// break
+            }
+          });
+          if(node_insert_line_index>=0){
+            _this.lastNode=current_node_offset;
+            _this.addNode(node_insert_line_index, _this.lastNode, 1);
+            _this.addNode(1-node_insert_line_index, _this.lastNode, 2);
+          }
+        }
+        
       };
       myCharater.hit=function(type){
         var _this=this;

@@ -19,6 +19,7 @@ define([
   };
 
   Path.prototype.draw=function(d_offset){
+    // var startTime=(new Date()).getTime();
     var _this=this,
       offset=_this.offset+d_offset;
     _this.offset=offset;
@@ -31,6 +32,8 @@ define([
       'transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',      
     });
     // _this.charaterImgData=_this.charater.ctx.getImageData(0, 0, _this.charater.canvas.width, _this.charater.canvas.height).data;
+    
+    var debug_node_count=0;
     $.each(_this.line, function(i, line){
       var new_line=[],
         node_offset,
@@ -38,7 +41,7 @@ define([
         node_draw_info={},
         line_info,
         node_hit_info={},
-        node_class='';
+        node_class='';  
       if(line_info=_this.option.lineInfo[i]){
         while(line.length){
           node_info=line.splice(0,1)[0];
@@ -114,9 +117,11 @@ define([
               //   node_draw_info.h
               // );
               // _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
-              if(_this.checkHit(node_hit_info)){
-                node_info.$el.remove();
-                node_info.$el=null;
+              if(node_hit_info.x <= (_this.charater.hitRect.x + _this.charater.hitRect.w) && _this.checkHit(node_hit_info)){
+                if(node_info.$el){
+                  node_info.$el.remove();
+                  node_info.$el=null;
+                }
               }else{
                 new_line.push(node_info);
               }
@@ -124,13 +129,17 @@ define([
               new_line.push(node_info);
             }
           }else{
-            node_info.$el.remove();
-            node_info.$el=null;
+            if(node_info.$el){
+              node_info.$el.remove();
+              node_info.$el=null;
+            }
           }
         }
         _this.line[i]=new_line;
+        debug_node_count+=new_line.length;
       }
     });
+    // console.log('duration: '+((new Date()).getTime() - startTime) +', node count: '+debug_node_count);
   };
 
   Path.prototype.addNode=function(lineIndex, offset, type){
@@ -142,6 +151,7 @@ define([
     $.each(_this.line[lineIndex], function(i, node){
       if(node.offset==offset){
         isExist=true;
+        return false;// break
       }
     });
     if(!isExist){
@@ -150,6 +160,8 @@ define([
         type: type
       });
     }
+
+    return !isExist;
   };
 
   // simple check
