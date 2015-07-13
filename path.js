@@ -73,12 +73,6 @@ define([
               node_draw_info.y -= node_draw_info.img.height;
               node_draw_info.w=node_draw_info.img.width;
               node_draw_info.h=node_draw_info.img.height;
-              // _this.ctx.fillRect(
-              //   node_draw_info.x,
-              //   node_draw_info.y,
-              //   node_draw_info.w,
-              //   node_draw_info.h
-              // );
               if(!node_info.$el){
                 node_info.$el=$('<div class="node '+ node_draw_info.className+'"></div>');
                 node_info.$el.appendTo(_this.$wrapper).css({

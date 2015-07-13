@@ -41,7 +41,7 @@ requirejs([
       $nodeWrapper=$('#nodeWrapper');
 
     var charater_path_init=function(){
-      myPath.nodeFrequence=1;// (0, 1]
+      myPath.nodeFrequence=0.03;// (0, 1]
       myPath.goldFrequence=1;// (0, 1]
       myPath.lineCount=2;
       myPath.grid=100;
@@ -107,26 +107,32 @@ requirejs([
           //   current_node_offset=startGridOffset + 6 * _this.grid;
           // }
           
-          $.each(_this.line, function(i, line){
-            var has_position=true;
-            if(i==node_insert_line_index){
-              return true;//continue
-            }
-            $.each(line, function(j, node){
-              if(node.offset==current_node_offset){
-                has_position=false;
+          node_insert_line_index=Math.floor(Math.random() * _this.lineCount);
+          if(_this.addNode(node_insert_line_index, current_node_offset, 1)){
+            _this.lastNode=current_node_offset;
+            _this.addNode(1-node_insert_line_index, _this.lastNode, 2);
+          }else{
+            $.each(_this.line, function(i, line){
+              var has_position=true;
+              if(i==node_insert_line_index){
+                return true;//continue
+              }
+              $.each(line, function(j, node){
+                if(node.offset==current_node_offset){
+                  has_position=false;
+                  return false;// break
+                }
+              });
+              if(has_position){
+                node_insert_line_index=i;
                 return false;// break
               }
             });
-            if(has_position){
-              node_insert_line_index=i;
-              return false;// break
+            if(node_insert_line_index>=0){
+              _this.lastNode=current_node_offset;
+              _this.addNode(node_insert_line_index, _this.lastNode, 1);
+              _this.addNode(1-node_insert_line_index, _this.lastNode, 2);
             }
-          });
-          if(node_insert_line_index>=0){
-            _this.lastNode=current_node_offset;
-            _this.addNode(node_insert_line_index, _this.lastNode, 1);
-            _this.addNode(1-node_insert_line_index, _this.lastNode, 2);
           }
         }
         
