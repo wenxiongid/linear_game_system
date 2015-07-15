@@ -78,3 +78,11 @@ demo: [http://junewu.work/game/5/demo.html](http://junewu.work/game/5/demo.html)
 由于此方法需每次取出两个canvas的`imageData`数据作比对，计算量和内存占用量都非常大，此demo也不需这么精确的碰撞判断，因此改用以下方法判断：
 
 使用人物占有的矩形区域与node的矩形区域简单作是否重叠的判断，但在此demo中此方法得出的碰撞机率太大，于是使用人物矩形区域中心点与node矩形区域的中心点作距离判断，若距离小于人物矩形区域的`(宽 + 高)/4`加上node矩形区域的`(宽 + 高)/4`则视为发生碰撞
+
+###一些优化
+
+因为android 4.4.2下webview中的canvas没有使用硬件加速，使得demo基本不可用，所以把canvas表现的元件全部转为用html dom
+
+逐帧动画本来使用js控制`background-position`实现，但在部分android和iOS设备上会出现闪烁，于是改用css3的`@keyframes`动画实现；原来的`top, left`控制人物、node位置的操作也改为使用`transform: translate3d(x, y, z)`控制
+
+在android、iOS设备上，似乎改变一个元素的`transform`CSS属性会使它的`@keyframes`动画停止，在此demo表现为空中的草泥马翅膀不会动，因此把修改每个node的`transform`改为修改整个的node容器
