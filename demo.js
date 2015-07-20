@@ -28,17 +28,28 @@ requirejs([
 
   var myImgLoader=new ImgLoader();
 
+  var $restTime,
+    myCharater,
+    getPoint=0,
+    getNode=0;
+
+  function showResult(){
+    $restTime.text('0.00');
+    myCharater.action('stand');
+    $('#resultMask').show();
+    $('.result-gold').text(getPoint);
+    $('.result-node').text(getNode);
+  }
+
   $(function(){
     timeline=new TimeLine();
     var stageHeight=600,
-      // stage=document.getElementById('gameStage'),
-      // charater=document.getElementById('charater'),
       timeline=new TimeLine(),
-      myCharater,
       myPath,
-      getPoint=0,
       $charater=$('.charaterC'),
       $nodeWrapper=$('#nodeWrapper');
+
+    
 
     var charater_path_init=function(){
       myPath.nodeFrequence=0.03;// (0, 1]
@@ -48,40 +59,6 @@ requirejs([
       myPath.lastNode=Math.ceil(myPath.width / myPath.grid) * myPath.grid;
       myPath.lastGoldNode=myPath.lastNode;
       myPath.addRandomNode=function(){
-        /*var _this=this,
-          addLineIndex=Math.floor(Math.random()*(_this.lineCount / _this.nodeFrequence)),
-          anotherLineIndex,
-          startGridOffset=Math.ceil((_this.offset+_this.width) / 50) * 50,
-          current_node;
-        if(addLineIndex<_this.lineCount){
-          current_node=_this.lastNode+(18+Math.floor(Math.random()*6)) * 50;
-          if(current_node<startGridOffset){
-            current_node=startGridOffset;
-          }
-          if(current_node<startGridOffset + 12 * 50){
-            _this.addNode(addLineIndex, current_node, 1);
-            _this.lastNode=current_node;
-            switch(addLineIndex){
-              case 0:
-                anotherLineIndex=1;
-                break;
-              default:
-                anotherLineIndex=0;
-            }
-            _this.addNode(anotherLineIndex, current_node, 2);
-            _this.lastGoldNode=_this.lastNode;
-          }
-        }else{
-          if(Math.random()<_this.goldFrequence){
-            _this.lastGoldNode=_this.lastGoldNode + 2 * 50;
-            if(_this.lastGoldNode<startGridOffset){
-              _this.lastGoldNode=startGridOffset;
-            }
-            if(_this.lastGoldNode<startGridOffset + 12 * 50){
-              _this.addNode(Math.floor(Math.random()*_this.lineCount), _this.lastGoldNode, 2);
-            }
-          }
-        }*/
         var _this=this,
           startGridOffset=Math.ceil((_this.offset+_this.width) / _this.grid) * _this.grid,
           goldAddLine=Math.floor(Math.random() * _this.lineCount / _this.goldFrequence),
@@ -103,9 +80,6 @@ requirejs([
           if(current_node_offset<startGridOffset){
             current_node_offset=startGridOffset;
           }
-          // if(current_node_offset>startGridOffset + 6 * _this.grid){
-          //   current_node_offset=startGridOffset + 6 * _this.grid;
-          // }
           
           node_insert_line_index=Math.floor(Math.random() * _this.lineCount);
           if(_this.addNode(node_insert_line_index, current_node_offset, 1)){
@@ -146,6 +120,7 @@ requirejs([
           case 1:
           default:
             setTimeout(function(){
+              getNode++;
               _this.speed=0;
               _this.isHit=true;
               _this.action('hit');
@@ -190,7 +165,7 @@ requirejs([
       airNodeImg,
       groundNodeImg
     ){
-      myCharater=new Character($charater, {
+      myCharater=new Character($charater, timeline, {
         zoom: canvas_zoom,
         standImg: {
           img: standImg,
@@ -265,6 +240,8 @@ requirejs([
           }
         }
       });
+      myCharater.render();
+
       myPath=new Path($nodeWrapper, myCharater, {
         zoom: canvas_zoom,
         width: windowW / canvas_zoom,
@@ -327,8 +304,6 @@ requirejs([
         });
       };
 
-    // stage.height=stageHeight;
-    // charater.height=stageHeight;
     var windowW=0,
       canvas_zoom=1,
       world_zoom=1;
@@ -338,8 +313,6 @@ requirejs([
         h=$this.height(),
         newW=w/h*stageHeight;
       windowW=w;
-      // stage.width=newW;
-      // charater.width=newW;
       canvas_zoom=h / stageHeight;
       world_zoom=h / 689;
       if(timeline.isInit){
@@ -360,32 +333,45 @@ requirejs([
       initBg(windowW);
     }).trigger('resize');
 
+    $restTime=$('#restTime');
+
     timeline.bind('timeUpdate', function(timeOffset){
-      var current_d_offset=timeOffset-last_offset;
-      myPath.draw(myCharater.speed*current_d_offset);
-      var world_offset=myPath.offset*0.1,
+      var current_d_offset,
+        world_offset,
+        lane_offset;
+      if(timeOffset<30 * 1000){
+        current_d_offset=timeOffset-last_offset;
+        world_offset=myPath.offset*0.1;
         lane_offset=myPath.offset * canvas_zoom;
-      while(world_offset>=1277 * world_zoom){
-        world_offset-=1277 * world_zoom;
+        myPath.draw(myCharater.speed*current_d_offset);
+        myCharater.render();
+        
+        while(world_offset>=1277 * world_zoom){
+          world_offset-=1277 * world_zoom;
+        }
+        $worldBg.css({
+          'width': oWorldWidth,
+          '-webkit-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          '-moz-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          '-o-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          '-ms-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          'transform':'translate3d('+ -world_offset +'px, 0,0)'
+        });
+        $laneBg.css({
+          'width': windowW + lane_offset,
+          '-webkit-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          '-moz-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          '-o-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          '-ms-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          'transform':'translate3d('+ -lane_offset +'px, 0,0)'
+        });
+        last_offset=timeOffset;
+        myPath.addRandomNode();
+        $restTime.text((30 - timeOffset/1000).toFixed(2));
+      }else{
+        timeline.stop();
+        showResult();
       }
-      $worldBg.css({
-        'width': oWorldWidth,
-        '-webkit-transform':'translate3d('+ -world_offset +'px, 0,0)',
-        '-moz-transform':'translate3d('+ -world_offset +'px, 0,0)',
-        '-o-transform':'translate3d('+ -world_offset +'px, 0,0)',
-        '-ms-transform':'translate3d('+ -world_offset +'px, 0,0)',
-        'transform':'translate3d('+ -world_offset +'px, 0,0)'
-      });
-      $laneBg.css({
-        'width': windowW + lane_offset,
-        '-webkit-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-        '-moz-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-        '-o-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-        '-ms-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-        'transform':'translate3d('+ -lane_offset +'px, 0,0)'
-      });
-      last_offset=timeOffset;
-      myPath.addRandomNode();
     });
 
     $('#jumpBtn').on(btnEvent, function(e){
@@ -411,12 +397,14 @@ requirejs([
         case 'running':
           $(this).text('run');
           timeline.pause();
+          $('body').addClass('paused');
           break;
         case 'paused':
         case 'stop':
         default:
           $(this).text('pause');
           timeline.start();
+          $('body').removeClass('paused');
       }
       return false;
     });

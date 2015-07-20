@@ -9,10 +9,11 @@ define([
   Helper,
   $
 ){
-  var Charater=function(el, option){
+  var Charater=function(el, timeline, option){
     var _this=this;
     _this.$el=$(el);
     _this.line='normal';
+    _this.timeline=timeline;
     _this.option=$.extend({
       speedMax: 0.5,
       accelerate: 0.1,
@@ -23,6 +24,8 @@ define([
     _this.g=500;
     _this.speed=0;
     _this.actionTimer=0;
+
+    _this.y=0;
   };
 
   Charater.prototype.startSpeedUp=function(){
@@ -33,17 +36,24 @@ define([
   };
 
   Charater.prototype.speedUp=function(){
-    var _this=this,
-      currentTime=(new Date()).getTime();
+    var _this=this;
     if(_this.isHit){
       _this.isUppingSpeed=false;
       _this.startSpeedUpTime=null;
       _this.startSpeedUpSpeed=_this.speed;
     }else{
       if(!_this.startSpeedUpTime){
-        _this.startSpeedUpTime=(new Date()).getTime();
+        _this.startSpeedUpTime=_this.timeline.timeOffset;
         _this.startSpeedUpSpeed=_this.speed;
       }
+      _this.isUppingSpeed=true;
+    }
+  };
+
+  Charater.prototype.updateSpeed=function(){
+    var _this=this,
+      currentTime=_this.timeline.timeOffset;
+    if(_this.isUppingSpeed){
       if(_this.speed<_this.option.speedMax){
         _this.isUppingSpeed=true;
         _this.speed=_this.startSpeedUpSpeed + (currentTime - _this.startSpeedUpTime)/ 1000 * _this.option.accelerate;
@@ -55,6 +65,15 @@ define([
         _this.speed=_this.option.speedMax;
       }
     }
+  };
+
+  Charater.prototype.render=function(){
+    var _this=this;
+    if(_this.line=='air'){
+      _this.changeAirPos();
+    }
+    _this.updateSpeed();
+    _this.draw(_this.y, _this.type);
   };
 
   Charater.prototype.draw=function(y, type){
@@ -124,31 +143,22 @@ define([
         '-ms-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
         'transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)'
       });
-    // _this.ctx.drawImage(
-    //   charaterImg.img,
-    //   0,
-    //   charaterImg.step*charaterImg.height,
-    //   charaterImg.width,
-    //   charaterImg.height,
-    //   _this.option.hitPoint-charaterImg.width,
-    //   320-y,
-    //   charaterImg.width,
-    //   charaterImg.height
-    // );
     charaterImg.step++;
   };
 
   Charater.prototype.drawHit=function(){
     var _this=this;
     clearTimeout(_this.actionTimer);
-    _this.draw(_this.charaterY, 'hit');
+    _this.y=_this.charaterY;
+    _this.type='hit';
   };
 
   Charater.prototype.normal=function(){
     var _this=this;
     clearTimeout(_this.actionTimer);
     _this.line='normal';
-    _this.draw(0, 'normal');
+    _this.y=0;
+    _this.type='normal';
     _this.actionTimer=setTimeout(function(){
       _this.normal();
     }, 100);
@@ -168,12 +178,10 @@ define([
       airTime=(currentAirTime-_this.startAirTime)/1000,
       newY=_this.vY0*airTime - _this.g * airTime * airTime / 2;
     if(newY>=0){
-      _this.draw(newY, 'air');
-      w.requestAnimationFrame(function(){
-        _this.changeAirPos();
-      });
+      _this.y=newY;
+      _this.type='air';
     }else{
-      _this.action('normal');
+      _this.normal();
     }
   };
 
@@ -182,7 +190,8 @@ define([
     clearTimeout(_this.actionTimer);
     _this.isUppingSpeed=false;
     _this.line='ground';
-    _this.draw(-50, 'ground');
+    _this.y=-50;
+    _this.type='ground';
     _this.speed*=0.9;
   };
 

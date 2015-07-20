@@ -12,6 +12,8 @@ define(['helper'], function(Helper){
     if(Helper.isFunction(fn)){
       _this.eventList[eventType].push(fn);
     }
+
+    return _this;
   };
 
   EV.prototype.trigger=function(eventType){
@@ -26,6 +28,8 @@ define(['helper'], function(Helper){
         }
       }
     }
+
+    return _this;
   };
 
   return EV;
