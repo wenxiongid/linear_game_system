@@ -49,8 +49,6 @@ requirejs([
       $charater=$('.charaterC'),
       $nodeWrapper=$('#nodeWrapper');
 
-    
-
     var charater_path_init=function(){
       myPath.nodeFrequence=0.03;// (0, 1]
       myPath.goldFrequence=1;// (0, 1]

@@ -79,7 +79,9 @@ define([
   Charater.prototype.draw=function(y, type){
     var _this=this,
       charaterImg,
-      charaterClassName;
+      charaterClassName,
+      rotate=0,
+      x=0;
     _this.charaterY=y;
     if(_this.isHit){
       charaterClassName='hit';
@@ -111,7 +113,9 @@ define([
             case _this.speed>0.4:
               charaterClassName='run';
               charaterImg=_this.option.runImg;
-              y+=21;
+              rotate=15;
+              y=32;
+              x=48;
               break;
             case _this.speed>0 && _this.speed<=0.4:
               charaterClassName='walk';
@@ -137,11 +141,11 @@ define([
       .removeClass('jump slide hit run walk stand')
       .addClass(charaterClassName)
       .css({
-        '-webkit-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
-        '-moz-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
-        '-o-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
-        '-ms-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)',
-        'transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width)+'px, '+(320-y)+'px, 0px)'
+        '-webkit-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        '-moz-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        '-o-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        '-ms-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        'transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)'
       });
     charaterImg.step++;
   };
