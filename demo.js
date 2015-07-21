@@ -4,18 +4,29 @@ requirejs([
   'timeline',
   'path',
   'charater',
-  'img_loader'
+  'img_loader',
+  'http://res.wx.qq.com/open/js/jweixin-1.0.0.js'
 ], function(
   $,
   Helper,
   TimeLine,
   Path,
   Character,
-  ImgLoader
+  ImgLoader,
+  wx
 ){
-  if(!Helper.canvasSupport()){
-    return;
+  var dict='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    noncestr='';
+  for(var i=0;i<16;i++){
+    noncestr+=dict[Math.floor(Math.random() * dict.length)];
   }
+  // wx.config({
+  //   debug: true,
+  //   appId: 'gh_b57e1aace17f',
+  //   timestamp: (new Date()).getTime(),
+  //   noncestr: noncestr
+  // });
+
   function support_touch_event(){
     return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
   }
