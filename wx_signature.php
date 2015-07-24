@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json; charset=utf-8');
 $ticket=$_POST['ticket'];
 $noncestr=$_POST['noncestr'];
 $timestamp=$_POST['timestamp'];
