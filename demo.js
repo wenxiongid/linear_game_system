@@ -16,16 +16,54 @@ requirejs([
   wx
 ){
   var dict='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-    noncestr='';
+    nonceStr='',
+    wx_param={
+      token: '',
+      ticket: ''
+    };
   for(var i=0;i<16;i++){
-    noncestr+=dict[Math.floor(Math.random() * dict.length)];
+    nonceStr+=dict[Math.floor(Math.random() * dict.length)];
   }
-  // wx.config({
-  //   debug: true,
-  //   appId: 'gh_b57e1aace17f',
-  //   timestamp: (new Date()).getTime(),
-  //   noncestr: noncestr
-  // });
+
+  function init_wx(){
+    var timestamp=Math.floor((new Date()).getTime() / 1000),
+      signature;
+    $.post('wx_signature.php', {
+      ticket: wx_param.ticket,
+      nonceStr: nonceStr,
+      timestamp: timestamp,
+      url: location.href.replace(location.hash, '')
+    }, function(data){
+      if(data.signature){
+        wx.config({
+          debug: true,
+          appId: 'gh_b57e1aace17f',
+          timestamp: timestamp,
+          nonceStr: nonceStr,
+          signature: signature,
+          jsApiList: [
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+            'onMenuShareQQ',
+            'onMenuShareWeibo',
+            'onMenuShareQZone',
+            'chooseImage',
+            'previewImage'
+          ]
+        });
+      }
+    });
+  }
+
+  $.getJSON('get_wx_access_token.php', {
+    name: 'abc'
+  }, function(data){
+    if(data.token && data.ticket){
+      wx_param.token=data.token;
+      wx_param.ticket=data.ticket;
+      init_wx();
+    }
+  });
 
   function support_touch_event(){
     return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
