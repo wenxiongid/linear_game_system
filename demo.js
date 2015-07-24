@@ -40,7 +40,7 @@ requirejs([
           appId: 'wx90c209e66b64c9dd',
           timestamp: timestamp,
           nonceStr: nonceStr,
-          signature: signature,
+          signature: data.signature,
           jsApiList: [
             'onMenuShareTimeline',
             'onMenuShareAppMessage',
