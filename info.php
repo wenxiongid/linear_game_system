@@ -1,12 +1,6 @@
 <?php
 $wx_info=array(
-  'app_id' => 'wxf9a3cbf1942afdfd',
-  'app_secret' => '00ba085d9180a35f1f030be288a7064b'
-);
-$sql_info=array(
-  'host' => 'localhost',
-  'username' => 'root',
-  'password' => '',
-  'database' => 'weixin'
+  'app_id' => 'wx90c209e66b64c9dd',
+  'app_secret' => 'b3fd70f3f7a7b947dd2df33cd9c0489c'
 );
 ?>
