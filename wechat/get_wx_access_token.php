@@ -1,5 +1,5 @@
 <?php
-// header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json; charset=utf-8');
 $app_name=$_GET['name'];
 
 require('info.php');

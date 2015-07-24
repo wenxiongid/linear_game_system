@@ -28,7 +28,7 @@ requirejs([
   function init_wx(){
     var timestamp=Math.floor((new Date()).getTime() / 1000),
       signature;
-    $.post('wx_sign.php', {
+    $.post('wechat/wx_sign.php', {
       ticket: wx_param.ticket,
       nonceStr: nonceStr,
       timestamp: timestamp,
@@ -37,7 +37,7 @@ requirejs([
       if(data.signature){
         wx.config({
           debug: true,
-          appId: 'gh_b57e1aace17f',
+          appId: 'wx90c209e66b64c9dd',
           timestamp: timestamp,
           nonceStr: nonceStr,
           signature: signature,
@@ -55,7 +55,7 @@ requirejs([
     });
   }
 
-  $.getJSON('get_wx_access_token.php', {
+  $.getJSON('wechat/get_wx_access_token.php', {
     name: 'abc'
   }, function(data){
     if(data.token && data.ticket){
