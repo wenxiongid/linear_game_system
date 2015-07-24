@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 $ticket=$_POST['ticket'];
-$noncestr=$_POST['noncestr'];
+$noncestr=$_POST['nonceStr'];
 $timestamp=$_POST['timestamp'];
 $url=$_POST['url'];
 
