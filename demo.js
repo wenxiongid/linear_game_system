@@ -28,7 +28,7 @@ requirejs([
   function init_wx(){
     var timestamp=Math.floor((new Date()).getTime() / 1000),
       signature;
-    $.post('wx_signature.php', {
+    $.post('wx_sign.php', {
       ticket: wx_param.ticket,
       nonceStr: nonceStr,
       timestamp: timestamp,
