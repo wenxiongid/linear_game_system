@@ -40,37 +40,37 @@ requirejs([
           nonceStr: nonceStr,
           signature: data.signature,
           jsApiList: [
-            'onMenuShareTimeline',
+            'onMenuShareTimeline'/*,
             'onMenuShareAppMessage',
             'onMenuShareQQ',
             'onMenuShareWeibo',
             'onMenuShareQZone',
             'chooseImage',
-            'previewImage'
+            'previewImage'*/
           ]
         });
         wx.ready(function(){
-          wx.error(function(res){
-            console.log(res);
-          });
-          wx.checkJsApi({
-            jsApiList: [
-              'onMenuShareTimeline',
-              'onMenuShareAppMessage',
-              'onMenuShareQQ',
-              'onMenuShareWeibo',
-              'onMenuShareQZone',
-              'chooseImage',
-              'previewImage'
-            ],
-            success: function(res){
-              console.log(res);
-            }
-          });
+          // wx.error(function(res){
+          //   console.log(res);
+          // });
+          // wx.checkJsApi({
+          //   jsApiList: [
+          //     'onMenuShareTimeline',
+          //     'onMenuShareAppMessage',
+          //     'onMenuShareQQ',
+          //     'onMenuShareWeibo',
+          //     'onMenuShareQZone',
+          //     'chooseImage',
+          //     'previewImage'
+          //   ],
+          //   success: function(res){
+          //     console.log(res);
+          //   }
+          // });
           wx.onMenuShareTimeline({
             title: '朋友圈分享测试标题',
             link: location.href,
-            imgUrl: 'http://misc.360buyimg.com/lib/img/e/logo-201305.png',
+            imgUrl: 'http://img14.360buyimg.com/cms/jfs/t1663/142/68569834/66736/c96cd6bd/556d753cN664ac098.png',
             success: function(){
               console.log('share success');
             },
@@ -78,18 +78,18 @@ requirejs([
               console.log('share cancel');
             }
           });
-          wx.onMenuShareAppMessage({
-            title: 'wechat朋友分享测试标题'
-          });
-          wx.onMenuShareQQ({
-            title: 'q朋友分享测试标题'
-          });
-          wx.onMenuShareWeibo({
-            title: 'weibo分享测试标题'
-          });
-          wx.onMenuShareQZone({
-            title: 'qzone分享测试标题'
-          });
+          // wx.onMenuShareAppMessage({
+          //   title: 'wechat朋友分享测试标题'
+          // });
+          // wx.onMenuShareQQ({
+          //   title: 'q朋友分享测试标题'
+          // });
+          // wx.onMenuShareWeibo({
+          //   title: 'weibo分享测试标题'
+          // });
+          // wx.onMenuShareQZone({
+          //   title: 'qzone分享测试标题'
+          // });
         });
       }
     });
