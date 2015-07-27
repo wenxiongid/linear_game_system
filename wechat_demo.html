@@ -8,7 +8,16 @@
 <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script src="jquery.js"></script>
 <script>
-var wx_param={};
+var dict='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    nonceStr='',
+    wx_param={
+      token: '',
+      ticket: ''
+    };
+for(var i=0;i<16;i++){
+  nonceStr+=dict[Math.floor(Math.random() * dict.length)];
+}
+
 function init_wx(){
   var signature;
   $.post('wechat/wx_sign.php', {
