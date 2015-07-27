@@ -49,28 +49,27 @@ requirejs([
             'previewImage'
           ]
         });
+        wx.ready(function(){
+          wx.error(function(res){
+            console.log(res);
+          });
+          wx.onMenuShareTimeline({
+            title: '朋友圈分享测试标题'
+          });
+          wx.onMenuShareAppMessage({
+            title: 'wechat朋友分享测试标题'
+          });
+          wx.onMenuShareQQ({
+            title: 'q朋友分享测试标题'
+          });
+          wx.onMenuShareWeibo({
+            title: 'weibo分享测试标题'
+          });
+          wx.onMenuShareQZone({
+            title: 'qzone分享测试标题'
+          });
+        });
       }
-    });
-
-    wx.ready(function(){
-      wx.error(function(res){
-        console.log(res);
-      });
-      wx.onMenuShareTimeline({
-        title: '朋友圈分享测试标题'
-      });
-      wx.onMenuShareAppMessage({
-        title: 'wechat朋友分享测试标题'
-      });
-      wx.onMenuShareQQ({
-        title: 'q朋友分享测试标题'
-      });
-      wx.onMenuShareWeibo({
-        title: 'weibo分享测试标题'
-      });
-      wx.onMenuShareQZone({
-        title: 'qzone分享测试标题'
-      });
     });
   }
 
