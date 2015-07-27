@@ -2,15 +2,14 @@
 header('Content-Type: application/json; charset=utf-8');
 $ticket=$_POST['ticket'];
 $noncestr=$_POST['nonceStr'];
-$timestamp=$_POST['timestamp'];
 $url=$_POST['url'];
 
 $ret['ticket']=$_POST['ticket'];
 $ret['nonceStr']=$_POST['nonceStr'];
-$ret['timestamp']=$_POST['timestamp'];
-$ret['url']=$_POST['url'];
+$ret['timestamp']=time();
 if($ticket && $noncestr && $timestamp && $url){
-  $ret['signature']=sha1('jsapi_ticket='.$ticket.'&noncestr='.$noncestr.'&timestamp='.$timestamp.'&url='.$url);
+  $ret['raw']='jsapi_ticket='.$ticket.'&noncestr='.$noncestr.'&timestamp='.$ret['timestamp'].'&url='.$url;
+  $ret['signature']=sha1($ret['raw']);
 }else{
   $ret['signature']='';
 }

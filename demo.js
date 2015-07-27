@@ -26,19 +26,17 @@ requirejs([
   }
 
   function init_wx(){
-    var timestamp=Math.floor((new Date()).getTime() / 1000),
-      signature;
+    var signature;
     $.post('wechat/wx_sign.php', {
       ticket: wx_param.ticket,
       nonceStr: nonceStr,
-      timestamp: timestamp,
       url: location.href.replace(location.hash, '')
     }, function(data){
       if(data.signature){
         wx.config({
           debug: true,
           appId: 'wx90c209e66b64c9dd',
-          timestamp: timestamp,
+          timestamp: data.timestamp,
           nonceStr: nonceStr,
           signature: data.signature,
           jsApiList: [
