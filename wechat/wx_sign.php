@@ -7,7 +7,7 @@ $url=$_POST['url'];
 $ret['ticket']=$_POST['ticket'];
 $ret['nonceStr']=$_POST['nonceStr'];
 $ret['timestamp']=time();
-if($ticket && $noncestr && $timestamp && $url){
+if($ticket && $noncestr && $url){
   $ret['raw']='jsapi_ticket='.$ticket.'&noncestr='.$noncestr.'&timestamp='.$ret['timestamp'].'&url='.$url;
   $ret['signature']=sha1($ret['raw']);
 }else{
