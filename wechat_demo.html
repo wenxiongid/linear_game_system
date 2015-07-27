@@ -49,20 +49,13 @@ function init_wx(){
           }
         });
       });
-      wx.onMenuShareTimeline({
-        title: '朋友圈分享测试标题2',
-        link: location.href,
-        imgUrl: 'http://img14.360buyimg.com/cms/jfs/t1663/142/68569834/66736/c96cd6bd/556d753cN664ac098.png',
-        success: function(){
-          console.log('share success');
-        },
-        cancel: function(){
-          console.log('share cancel');
-        }
-      });
+      
     }
   });
 }
+wx.onMenuShareTimeline({
+  title: '朋友圈分享测试标题2'
+});
 
 $.getJSON('wechat/get_wx_access_token.php', {
   name: 'abc'
