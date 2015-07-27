@@ -64,11 +64,19 @@ requirejs([
               'previewImage'
             ],
             success: function(res){
-              alert(JSON.stringify(res));
+              console.log(res);
             }
           });
           wx.onMenuShareTimeline({
-            title: '朋友圈分享测试标题'
+            title: '朋友圈分享测试标题',
+            link: location.href,
+            imgUrl: 'http://misc.360buyimg.com/lib/img/e/logo-201305.png',
+            success: function(){
+              console.log('share success');
+            },
+            cancel: function(){
+              console.log('share cancel');
+            }
           });
           wx.onMenuShareAppMessage({
             title: 'wechat朋友分享测试标题'
