@@ -39,7 +39,7 @@ $file_name='wx_info/'.$app_name.'.json';
 if($app_name){
   if(file_exists($file_name)){
     $res=json_decode(file_get_contents($file_name));
-    if($res && $res->last && $res->expires_in && time()>(int)$res->last+(int)$res->expires_in || $res->token=='' || $res->ticket==''){
+    if($res && $res->last && $res->expires_in && time()<(int)$res->last+(int)$res->expires_in || $res->token=='' || $res->ticket==''){
       $ret['token']=$res->token;
       $ret['ticket']=$res->ticket;
     }else{
