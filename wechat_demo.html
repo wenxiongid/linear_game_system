@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>wechat demo</title>
+</head>
+<body>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="jquery.js"></script>
+<script>
+function init_wx(){
+  var signature;
+  $.post('wechat/wx_sign.php', {
+    ticket: wx_param.ticket,
+    nonceStr: nonceStr,
+    url: location.href.replace(location.hash, '')
+  }, function(data){
+    if(data.signature){
+      wx.config({
+        debug: true,
+        appId: 'wx90c209e66b64c9dd',
+        timestamp: data.timestamp,
+        nonceStr: nonceStr,
+        signature: data.signature,
+        jsApiList: [
+          'onMenuShareTimeline'
+        ]
+      });
+      wx.ready(function(){
+        wx.onMenuShareTimeline({
+          title: '朋友圈分享测试标题',
+          link: location.href,
+          imgUrl: 'http://img14.360buyimg.com/cms/jfs/t1663/142/68569834/66736/c96cd6bd/556d753cN664ac098.png',
+          success: function(){
+            console.log('share success');
+          },
+          cancel: function(){
+            console.log('share cancel');
+          }
+        });
+      });
+    }
+  });
+}
+
+$.getJSON('wechat/get_wx_access_token.php', {
+  name: 'abc'
+}, function(data){
+  if(data.token && data.ticket){
+    wx_param.token=data.token;
+    wx_param.ticket=data.ticket;
+    init_wx();
+  }
+});
+</script>
+</body>
+</html>
