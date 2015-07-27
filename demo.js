@@ -53,6 +53,20 @@ requirejs([
           wx.error(function(res){
             console.log(res);
           });
+          wx.checkJsApi({
+            jsApiList: [
+              'onMenuShareTimeline',
+              'onMenuShareAppMessage',
+              'onMenuShareQQ',
+              'onMenuShareWeibo',
+              'onMenuShareQZone',
+              'chooseImage',
+              'previewImage'
+            ],
+            success: function(res){
+              alert(JSON.stringify(res));
+            }
+          });
           wx.onMenuShareTimeline({
             title: '朋友圈分享测试标题'
           });
