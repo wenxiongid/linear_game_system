@@ -5,7 +5,8 @@ requirejs([
   'path',
   'charater',
   'img_loader',
-  'http://res.wx.qq.com/open/js/jweixin-1.0.0.js'
+  'wechat_config',
+  'face'
 ], function(
   $,
   Helper,
@@ -13,115 +14,16 @@ requirejs([
   Path,
   Character,
   ImgLoader,
-  wx
+  WeChatInfo,
+  Face
 ){
-  var dict='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-    nonceStr='',
-    wx_param={
-      token: '',
-      ticket: ''
-    };
-  for(var i=0;i<16;i++){
-    nonceStr+=dict[Math.floor(Math.random() * dict.length)];
-  }
+  // wechat init
+  var myWeChatInfo=new WeChatInfo('wx90c209e66b64c9dd');
 
-  function init_wx(){
-    var signature;
-    $.post('wechat/wx_sign.php', {
-      ticket: wx_param.ticket,
-      nonceStr: nonceStr,
-      url: location.href.replace(location.hash, '')
-    }, function(data){
-      if(data.signature){
-        wx.config({
-          debug: true,
-          appId: 'wx90c209e66b64c9dd',
-          timestamp: data.timestamp,
-          nonceStr: nonceStr,
-          signature: data.signature,
-          jsApiList: [
-            'onMenuShareTimeline'/*,
-            'onMenuShareAppMessage',
-            'onMenuShareQQ',
-            'onMenuShareWeibo',
-            'onMenuShareQZone',
-            'chooseImage',
-            'previewImage'*/
-          ]
-        });
-        wx.ready(function(){
-          // wx.error(function(res){
-          //   console.log(res);
-          // });
-          // wx.checkJsApi({
-          //   jsApiList: [
-          //     'onMenuShareTimeline',
-          //     'onMenuShareAppMessage',
-          //     'onMenuShareQQ',
-          //     'onMenuShareWeibo',
-          //     'onMenuShareQZone',
-          //     'chooseImage',
-          //     'previewImage'
-          //   ],
-          //   success: function(res){
-          //     console.log(res);
-          //   }
-          // });
-          wx.onMenuShareTimeline({
-            title: '朋友圈分享测试标题',
-            link: location.href,
-            imgUrl: 'http://img14.360buyimg.com/cms/jfs/t1663/142/68569834/66736/c96cd6bd/556d753cN664ac098.png',
-            success: function(){
-              console.log('share success');
-            },
-            cancel: function(){
-              console.log('share cancel');
-            }
-          });
-          // wx.onMenuShareAppMessage({
-          //   title: 'wechat朋友分享测试标题'
-          // });
-          // wx.onMenuShareQQ({
-          //   title: 'q朋友分享测试标题'
-          // });
-          // wx.onMenuShareWeibo({
-          //   title: 'weibo分享测试标题'
-          // });
-          // wx.onMenuShareQZone({
-          //   title: 'qzone分享测试标题'
-          // });
-        });
-      }
-    });
-  }
-
-  $.getJSON('wechat/get_wx_access_token.php', {
-    name: 'abc'
-  }, function(data){
-    if(data.token && data.ticket){
-      wx_param.token=data.token;
-      wx_param.ticket=data.ticket;
-      init_wx();
-    }
-  });
-
-  function support_touch_event(){
-    return !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
-  }
-
-  var btnEvent=support_touch_event() ? 'touchstart' : 'click';
-
-  var updateResult=function(point){
+  // UI display
+  function updateResult(point){
     $('#result').text(point);
-  };
-
-  var myImgLoader=new ImgLoader();
-
-  var $restTime,
-    myCharater,
-    getPoint=0,
-    getNode=0;
-
+  }
   function showResult(){
     $restTime.text('0.00');
     myCharater.action('stand');
@@ -129,15 +31,78 @@ requirejs([
     $('.result-gold').text(getPoint);
     $('.result-node').text(getNode);
   }
+  // UI display end
+
+  var $restTime,
+    myCharater,
+    getPoint=0,
+    getNode=0,
+    myImgLoader=new ImgLoader(),
+    stageHeight=600,
+    timeline=new TimeLine(),
+    myPath,
+    windowInfo={
+      width: 0,
+      bgZoom:1,
+      stageZoom: 1
+    };
 
   $(function(){
-    timeline=new TimeLine();
-    var stageHeight=600,
-      timeline=new TimeLine(),
-      myPath,
-      $charater=$('.charaterC'),
-      $nodeWrapper=$('#nodeWrapper');
+    // page view fixed
+    $(document).on('touchmove', function(e){
+      e.preventDefault();
+    });
+    // page view fixed end
 
+    // dom var init
+    var $charater=$('.charaterC'),
+      $nodeWrapper=$('#nodeWrapper'),
+      $worldBg=$('#worldBg'),
+      $laneBg=$('#laneBg');
+    $restTime=$('#restTime');
+
+    var initBg=(function(){
+      var oWorldWidth=0,
+        isBgInited=false;
+
+      return function(windowWidth){
+        if(!isBgInited){
+          isBgInited=true;
+        }
+        oWorldWidth=2 * 1200 * windowWidth / 689;
+        $worldBg.css({
+          'width': oWorldWidth
+        });
+      };
+    })();
+    // dom var init end
+
+    $(window).on('resize orientationchange', function(){
+      var $this=$(this),
+        w=$this.width(),
+        h=$this.height(),
+        newW=w/h*stageHeight;
+      windowInfo.width=w;
+      windowInfo.stageZoom=h / stageHeight;
+      windowInfo.bgZoom=h / 689;
+      if(timeline.isInit){
+        if(w<h){
+          timeline.pause();
+        }else{
+          timeline.start();
+        }
+      }
+      if(myCharater && myCharater.action){
+        myCharater.zoom=windowInfo.stageZoom;
+        myCharater.action('normal');
+      }
+      if(myPath){
+        myPath.zoom=windowInfo.stageZoom;
+        myPath.width=w / windowInfo.stageZoom;
+      }
+      initBg(w);
+    }).trigger('resize');
+    
     var charater_path_init=function(){
       myPath.nodeFrequence=0.03;// (0, 1]
       myPath.goldFrequence=1;// (0, 1]
@@ -253,7 +218,7 @@ requirejs([
       groundNodeImg
     ){
       myCharater=new Character($charater, timeline, {
-        zoom: canvas_zoom,
+        zoom: windowInfo.stageZoom,
         standImg: {
           img: standImg,
           width: 132,
@@ -330,8 +295,8 @@ requirejs([
       myCharater.render();
 
       myPath=new Path($nodeWrapper, myCharater, {
-        zoom: canvas_zoom,
-        width: windowW / canvas_zoom,
+        zoom: windowInfo.stageZoom,
+        width: windowInfo.width / windowInfo.stageZoom,
         lineInfo: [{
           y: 380,
           nodeClass: {
@@ -371,73 +336,24 @@ requirejs([
         }
       });
       update_air_node_step();
-
       charater_path_init();
     });
 
-    var last_offset=0,
-      $worldBg=$('#worldBg'),
-      $laneBg=$('#laneBg'),
-      oWorldWidth=0;
-
-    var isBgInited=false,
-      initBg=function(windowWidth){
-        if(!isBgInited){
-          isBgInited=true;
-        }
-        oWorldWidth=2 * 1200 * windowWidth / 689;
-        $worldBg.css({
-          'width': oWorldWidth
-        });
-      };
-
-    var windowW=0,
-      canvas_zoom=1,
-      world_zoom=1;
-    $(window).on('resize orientationchange', function(){
-      var $this=$(this),
-        w=$this.width(),
-        h=$this.height(),
-        newW=w/h*stageHeight;
-      windowW=w;
-      canvas_zoom=h / stageHeight;
-      world_zoom=h / 689;
-      if(timeline.isInit){
-        if(w<h){
-          timeline.pause();
-        }else{
-          timeline.start();
-        }
-      }
-      if(myCharater && myCharater.action){
-        myCharater.zoom=canvas_zoom;
-        myCharater.action('normal');
-      }
-      if(myPath){
-        myPath.zoom=canvas_zoom;
-        myPath.width=windowW / canvas_zoom;
-      }
-      initBg(windowW);
-    }).trigger('resize');
-
-    $restTime=$('#restTime');
-
-    timeline.bind('timeUpdate', function(timeOffset){
-      var current_d_offset,
+    timeline.bind('timeUpdate', function(timeOffsetInfo){
+      var current_d_offset=timeOffsetInfo.d_offset,
+        time_offset=timeOffsetInfo.offset,
         world_offset,
         lane_offset;
-      if(timeOffset<30 * 1000){
-        current_d_offset=timeOffset-last_offset;
+      if(time_offset<30 * 1000){
         world_offset=myPath.offset*0.1;
-        lane_offset=myPath.offset * canvas_zoom;
+        lane_offset=myPath.offset * windowInfo.stageZoom;
         myPath.draw(myCharater.speed*current_d_offset);
         myCharater.render();
         
-        while(world_offset>=1277 * world_zoom){
-          world_offset-=1277 * world_zoom;
+        while(world_offset>=1277 * windowInfo.bgZoom){
+          world_offset-=1277 * windowInfo.bgZoom;
         }
         $worldBg.css({
-          'width': oWorldWidth,
           '-webkit-transform':'translate3d('+ -world_offset +'px, 0,0)',
           '-moz-transform':'translate3d('+ -world_offset +'px, 0,0)',
           '-o-transform':'translate3d('+ -world_offset +'px, 0,0)',
@@ -445,40 +361,39 @@ requirejs([
           'transform':'translate3d('+ -world_offset +'px, 0,0)'
         });
         $laneBg.css({
-          'width': windowW + lane_offset,
+          'width': windowInfo.width + lane_offset,
           '-webkit-transform':'translate3d('+ -lane_offset +'px, 0,0)',
           '-moz-transform':'translate3d('+ -lane_offset +'px, 0,0)',
           '-o-transform':'translate3d('+ -lane_offset +'px, 0,0)',
           '-ms-transform':'translate3d('+ -lane_offset +'px, 0,0)',
           'transform':'translate3d('+ -lane_offset +'px, 0,0)'
         });
-        last_offset=timeOffset;
         myPath.addRandomNode();
-        $restTime.text((30 - timeOffset/1000).toFixed(2));
+        $restTime.text((30 - time_offset/1000).toFixed(2));
       }else{
         timeline.stop();
         showResult();
       }
     });
 
-    $('#jumpBtn').on(btnEvent, function(e){
+    // charater control
+    $('#jumpBtn').on(Helper.mouseStartEvent, function(e){
       e.preventDefault();
-      if(myCharater.line=='normal' && !myCharater.isHit){
-        myCharater.action('air');
-      }
+      myCharater.action('air');
       return false;
     });
-    $('#slideBtn').on(btnEvent, function(e){
+    $('#slideBtn').on(Helper.mouseStartEvent, function(e){
       e.preventDefault();
-      if(myCharater.line=='normal' && !myCharater.isHit){
-        myCharater.action('ground');
-        setTimeout(function(){
-          myCharater.action('normal');
-        }, 800);
-      }
+      myCharater.action('ground');
+      setTimeout(function(){
+        myCharater.action('normal');
+      }, 800);
       return false;
     });
-    $('#pauseStartBtn').on(btnEvent, function(e){
+    // charater control end
+    
+    // game time control
+    $('#pauseStartBtn').on(Helper.mouseStartEvent, function(e){
       e.preventDefault();
       switch(timeline.status){
         case 'running':
@@ -495,18 +410,53 @@ requirejs([
       }
       return false;
     });
+    // game time control end
 
-    $('#startBtn').on(btnEvent, function(e){
+    // game start
+    $('#startBtn').on(Helper.mouseStartEvent, function(e){
       e.preventDefault();
-      $('#mask').hide();
+      $('#initMask').hide();
       timeline.isInit=true;
       timeline.start();
       myCharater.action('normal');
       return false;
     });
-
-    $(document).on('touchmove', function(e){
-      e.preventDefault();
+    // game start end
+    
+    // face
+    var gameFace=new Face('#faceImg', '#oImgContainer', {
+      eye1: '#eye1',
+      eye2: '#eye2',
+      mouth: '#mouth'
+    }, '#adstractContainer');
+    gameFace.bind('load_complete', function(){
+      $('#imgAdjustFrame').removeClass('hide').siblings('.frame').addClass('hide');
+    }).bind('face_ready', function(){
+      $('#faceAdstractFrame').removeClass('hide').siblings('.frame').addClass('hide');
+    }).bind('face_complete', function(faceUrl){
+      $('#startFrame').removeClass('hide').siblings('.frame').addClass('hide');
+      $('<img src="'+faceUrl+'" class="face" />').appendTo($charater);
     });
+
+    $('.blank-face-btn').on(Helper.mouseStartEvent, function(e){
+      $('#startFrame').removeClass('hide').siblings('.frame').addClass('hide');
+    });
+    $('.select-face-btn').on(Helper.mouseStartEvent, function(e){
+      $('#faceImg').click();
+    });
+    $('.retake-btn').on(Helper.mouseStartEvent, function(e){
+      $('#selectCharacterFrame').removeClass('hide').siblings('.frame').addClass('hide');
+    });
+    $('#imgAdjustFrame .submit-btn').on(Helper.mouseStartEvent, function(e){
+      gameFace.adjust();
+    });
+    $('.regetface-btn').on(Helper.mouseStartEvent, function(e){
+      $('#imgAdjustFrame').removeClass('hide').siblings('.frame').addClass('hide');
+    });
+    $('#faceAdstractFrame .submit-btn').on(Helper.mouseStartEvent, function(e){
+      gameFace.adstract();
+    });
+    // face end
+    
   });
 });

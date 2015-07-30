@@ -203,10 +203,14 @@ define([
     var _this=this;
     switch(type){
       case 'air':
-        _this.air();
+        if(_this.line=='normal' || !_this.isHit){
+          _this.air();
+        }
         break;
       case 'ground':
-        _this.ground();
+        if(_this.line=='normal' || !_this.isHit){
+          _this.ground();
+        }
         break;
       case 'hit':
         _this.drawHit();

@@ -1,5 +1,9 @@
 @import 'bower_components/lesshat/build/lesshat-prefixed.less';
 
+.hide{
+  display: none;
+}
+
 html,
 body,
 #viewport,
@@ -58,13 +62,21 @@ body,
   left: 0;
 }
 .lh-keyframes(~'walk, 0%{background-position: 0 0px;} 24.99%{background-position: 0 0px;} 25%{background-position: 0 -220px;} 49.99%{background-position: 0 -220px;} 50%{background-position: 0 -440px;} 74.99%{background-position: 0 -440px;} 75%{background-position: 0 -660px;} 100%{background-position: 0 -660px;}');
+.lh-keyframes(~'walkface, 0%{transform: translate(0px, 0px);} 24.99%{transform: translate(0px, 0px);} 25%{transform: translate(0px, 2px)} 49.99%{transform: translate(0px, 2px)} 50%{transform: translate(0px, 0px);} 74.99%{transform: translate(0px, 0px);} 75%{transform: translate(px, 2px);} 100%{transform: translate(0px, 2px);}');
 .lh-keyframes(~'run, 0%{background-position: 0 0px;} 24.99%{background-position: 0 0px;} 25%{background-position: 0 -241px;} 49.99%{background-position: 0 -241px;} 50%{background-position: 0 -482px;} 74.99%{background-position: 0 -482px;} 75%{background-position: 0 -723px;} 100%{background-position: 0 -723px;}');
+.lh-keyframes(~'runface, 0%{transform: translate(25px, 15px) rotate(-10deg);} 24.99%{transform: translate(25px, 15px) rotate(-10deg);} 25%{transform: translate(25px, 18px) rotate(-10deg);} 49.99%{transform: translate(25px, 18px) rotate(-10deg);} 50%{transform: translate(25px, 15px) rotate(-10deg);} 74.99%{transform: translate(25px, 15px) rotate(-10deg);} 75%{transform: translate(25px, 18px) rotate(-10deg);} 100%{transform: translate(25px, 18px) rotate(-10deg);}');
 
 .charaterC{
   position: absolute;
   top: 0;
   left: 0;
   background-repeat: no-repeat;
+  .face{
+    position: absolute;
+    top: 70px;
+    left: 55px;
+    width: 50px;
+  }
   .lh-transform-origin(0 0);
   &.stand{
     background-image: url('img/stand.png');
@@ -76,12 +88,18 @@ body,
     width: 132px;
     height: 220px;
     .lh-animation(~'walk 800ms infinite linear');
+    .face{
+      .lh-animation(~'walkface 800ms infinite linear');
+    }
   }
   &.run{
     background-image: url('img/run.png');
     width: 161px;
     height: 241px;
     .lh-animation(~'run 600ms infinite linear');
+    .face{
+      .lh-animation(~'runface 600ms infinite linear');
+    }
   }
   &.jump{
     background-image: url('img/jump.png'); 
@@ -92,11 +110,17 @@ body,
     background-image: url('img/slide.png');
     width: 231px;
     height: 179px;
+    .face{
+      .lh-transform(~'translate(40px, 10px) rotate(-20deg)');
+    }
   }
   &.hit{
     background-image: url('img/hit.png');
     width: 221px;
     height: 172px;
+    .face{
+      .lh-transform(~'translate(55px, 30px) rotate(20deg)');
+    }
   }
 }
 #jumpBtn,
@@ -143,7 +167,7 @@ body,
   font-size: 14px;
   color: #000;
 }
-#mask,
+#initMask,
 #resultMask{
   position: absolute;
   width: 100%;
@@ -152,6 +176,120 @@ body,
   left: 0;
   background: rgba(0, 0, 0, 0.7);
 }
+.frame{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+.character-btn{
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 50px;
+  margin-left: -100px;
+  line-height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: #ccc;
+  color: #333;
+  font-size: 24px;
+  text-align: center;
+  text-decoration: none;
+}
+.blank-face-btn{
+  margin-top: -75px;
+}
+.select-face-btn{
+  margin-top: 25px;
+}
+#faceImg{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -200px;
+  left: -200px;
+}
+#oImgContainer,
+#adstractContainer{
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+#oImgContainer{
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  .eyes,
+  .mouth{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 20px;
+    color: #fff;
+  }
+  .eyes{
+    top: 100px;
+    color: #882200;
+  }
+  .mouth{
+    top: 200px;
+    left: 150px;
+    color: #228800;
+  }
+  #eye1{
+    left: 50px;
+  }
+  #eye2{
+    left: 250px;
+  }
+}
+#adstractContainer{
+  top: 10px;
+  left: 50%;
+  background-color: #fff;
+}
+.frame{
+  .tips{
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    left: 0;
+    bottom: 40px;
+    margin: 0;
+    line-height: 20px;
+    background: #999;
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+  }
+  .btn-row{
+    position: absolute;
+    height: 40px;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    margin: 0; 
+  }
+  .btn{
+    display: block;
+    width: 50%;
+    .lh-box-sizing(~'border-box');
+    height: 40px;
+    line-height: 40px;
+    float: left;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: #ccc;
+    color: #333;
+    text-align: center;
+    text-decoration: none;
+  }
+}
+
 #resultMask{
   display: none;
   p{

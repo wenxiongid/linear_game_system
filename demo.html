@@ -10,17 +10,48 @@
 <div id="viewport">
   <div id="worldBg"></div>
   <div id="laneBg"></div>
-  <!-- <canvas id="gameStage">鲜虾云吞面</canvas> -->
   <div id="nodeWrapper"></div>
-  <!-- <canvas id="charater">至尊五宝饭</canvas> -->
   <div class="charaterC"></div>
   <a href="javascript:;" id="jumpBtn">JUMP</a>
   <a href="javascript:;" id="slideBtn">SLIDE</a>
   <a href="javascript:;" id="pauseStartBtn">pause</a>
   <div id="resultWrapper">Point: <span id="result">0</span></div>
   <div class="rest-time-wrapper"><span id="restTime">30.00</span>s</div>
-  <div id="mask">
-    <a href="javascript:;" id="startBtn">START</a>
+  <div id="initMask">
+    <!-- selectCharaterFrame -->
+    <div id="selectCharacterFrame" class="frame">
+      <a href="javascript:;" class="blank-face-btn character-btn">空</a>
+      <a href="javascript:;" class="select-face-btn character-btn">选择图片</a>
+      <input type="file" name="faceImg" id="faceImg">
+    </div>
+    <!-- imgAdjustFrame -->
+    <div id="imgAdjustFrame" class="frame hide">
+      <div id="oImgContainer">
+        <div id="eye1" class="eyes">眼</div>
+        <div id="eye2" class="eyes">眼</div>
+        <div id="mouth" class="mouth">嘴</div>
+      </div>
+      <p class="tips">请将眼、嘴标志调至合适位置</p>
+      <div class="clearfloat btn-row">
+        <a href="javascript:;" class="btn retake-btn">重拍</a>
+        <a href="javascript:;" class="btn submit-btn">选定</a>
+      </div>
+    </div>
+    <!-- faceAdstractFrame -->
+    <div id="faceAdstractFrame" class="frame hide">
+      <div id="adstractContainer">
+        <img src="" id="faceImg">
+      </div>
+      <p class="tips">请拖动面图像至合适位置</p>
+      <p class="clearfloat btn-row">
+        <a href="javascript:;" class="btn regetface-btn">重设</a>
+        <a href="javascript:;" class="btn submit-btn">选定</a>
+      </p>
+    </div>
+    <!-- startFrame -->
+    <div id="startFrame" class="frame hide">
+      <a href="javascript:;" id="startBtn">START</a>
+    </div>
   </div>
   <div id="resultMask">
     <p>得到金币：<span class="result-gold">0</span></p>

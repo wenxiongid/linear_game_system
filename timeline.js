@@ -44,14 +44,20 @@ define([
   };
 
   TimeLine.prototype.updateTime=function(){
-    var _this=this;
+    var _this=this,
+      currentTimeOffset,
+      gapTimeOffset;
     if(_this.status=='running'){
       _this.runningTimer=w.requestAnimationFrame(function(){
         _this.updateTime();
       });
-      _this.currentTime=(new Date()).getTime();
-      _this.timeOffset=_this.currentTime-_this.startTime;
-      _this.trigger('timeUpdate', _this.timeOffset);
+      currentTimeOffset=(new Date()).getTime() - _this.startTime;
+      gapTimeOffset=currentTimeOffset-_this.timeOffset;
+      _this.trigger('timeUpdate', {
+        offset: _this.timeOffset,
+        d_offset: gapTimeOffset
+      });
+      _this.timeOffset=currentTimeOffset;
     }
   };
 
