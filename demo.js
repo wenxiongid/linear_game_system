@@ -31,6 +31,23 @@ requirejs([
     $('.result-gold').text(getPoint);
     $('.result-node').text(getNode);
   }
+  function showRotateTips(type){
+    var $rotateTipsMask=$('#rotateTipsMask');
+    switch(type){
+      case 'toVert':
+        $rotateTipsMask.removeClass('hide');
+        $('.rotate-to-vert', $rotateTipsMask).removeClass('hide');
+        break;
+      case 'toHori':
+        $rotateTipsMask.removeClass('hide');
+        $('.rotate-to-hori', $rotateTipsMask).removeClass('hide');
+        break;
+      case 'none'://go on
+      default:
+        $rotateTipsMask.addClass('hide');
+        $('.rotate-to-hori, .rotate-to-vert', $rotateTipsMask).addClass('hide');
+    }
+  }
   // UI display end
 
   var $restTime,
@@ -45,7 +62,8 @@ requirejs([
       width: 0,
       bgZoom:1,
       stageZoom: 1
-    };
+    },
+    pageType='vert';
 
   $(function(){
     // page view fixed
@@ -86,11 +104,28 @@ requirejs([
       windowInfo.stageZoom=h / stageHeight;
       windowInfo.bgZoom=h / 689;
       if(timeline.isInit){
+        timeline.updateTime();
         if(w<h){
           timeline.pause();
         }else{
           timeline.start();
         }
+      }
+      switch(pageType){
+        case 'vert':
+          if(w>h){
+            showRotateTips('toVert');
+          }else{
+            showRotateTips('none');
+          }
+          break;
+        case 'hori':
+          if(w<h){
+            showRotateTips('toHori');
+          }else{
+            showRotateTips('none');
+          }
+          break;
       }
       if(myCharater && myCharater.action){
         myCharater.zoom=windowInfo.stageZoom;
@@ -436,10 +471,14 @@ requirejs([
     }).bind('face_complete', function(faceUrl){
       $('#startFrame').removeClass('hide').siblings('.frame').addClass('hide');
       $('<img src="'+faceUrl+'" class="face" />').appendTo($charater);
+      pageType='hori';
+      $(window).trigger('resize');
     });
 
     $('.blank-face-btn').on(Helper.mouseStartEvent, function(e){
       $('#startFrame').removeClass('hide').siblings('.frame').addClass('hide');
+      pageType='hori';
+      $(window).trigger('resize');
     });
     $('.select-face-btn').on(Helper.mouseStartEvent, function(e){
       $('#faceImg').click();
