@@ -94,6 +94,57 @@ requirejs([
       };
     })();
     // dom var init end
+    
+    // stage render
+    var renderStage=function(timeOffsetInfo, isForce){
+      var current_d_offset=0,
+        time_offset=0,
+        world_offset,
+        lane_offset;
+      if(timeOffsetInfo){
+        current_d_offset=timeOffsetInfo.d_offset || 0;
+        time_offset=timeOffsetInfo.offset || 0;
+      }
+      if(time_offset<30 * 1000){
+        if(myPath){
+          world_offset=myPath.offset*0.1;
+          lane_offset=myPath.offset * windowInfo.stageZoom;
+          myPath.draw(myCharater.speed*current_d_offset, isForce);
+          myPath.addRandomNode();
+        }else{
+          world_offset=0;
+          lane_offset=0;
+        }
+
+        if(myCharater){
+          myCharater.render();
+        }
+        
+        while(world_offset>=1277 * windowInfo.bgZoom){
+          world_offset-=1277 * windowInfo.bgZoom;
+        }
+        $worldBg.css({
+          '-webkit-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          '-moz-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          '-o-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          '-ms-transform':'translate3d('+ -world_offset +'px, 0,0)',
+          'transform':'translate3d('+ -world_offset +'px, 0,0)'
+        });
+        $laneBg.css({
+          'width': windowInfo.width + lane_offset,
+          '-webkit-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          '-moz-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          '-o-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          '-ms-transform':'translate3d('+ -lane_offset +'px, 0,0)',
+          'transform':'translate3d('+ -lane_offset +'px, 0,0)'
+        });
+        $restTime.text((30 - time_offset/1000).toFixed(2));
+      }else{
+        timeline.stop();
+        showResult();
+      }
+    };
+    // stage render end
 
     $(window).on('resize orientationchange', function(){
       var $this=$(this),
@@ -103,14 +154,7 @@ requirejs([
       windowInfo.width=w;
       windowInfo.stageZoom=h / stageHeight;
       windowInfo.bgZoom=h / 689;
-      if(timeline.isInit){
-        timeline.updateTime();
-        if(w<h){
-          timeline.pause();
-        }else{
-          timeline.start();
-        }
-      }
+      
       switch(pageType){
         case 'vert':
           if(w>h){
@@ -135,6 +179,17 @@ requirejs([
         myPath.zoom=windowInfo.stageZoom;
         myPath.width=w / windowInfo.stageZoom;
       }
+      if(timeline.isInit){
+        if(w<h){
+          timeline.pause();
+        }else{
+          timeline.start();
+        }
+      }
+      renderStage({
+        offset: timeline.timeOffset,
+        d_offset: timeline.gapTimeOffset
+      }, true);
       initBg(w);
     }).trigger('resize');
     
@@ -375,40 +430,7 @@ requirejs([
     });
 
     timeline.bind('timeUpdate', function(timeOffsetInfo){
-      var current_d_offset=timeOffsetInfo.d_offset,
-        time_offset=timeOffsetInfo.offset,
-        world_offset,
-        lane_offset;
-      if(time_offset<30 * 1000){
-        world_offset=myPath.offset*0.1;
-        lane_offset=myPath.offset * windowInfo.stageZoom;
-        myPath.draw(myCharater.speed*current_d_offset);
-        myCharater.render();
-        
-        while(world_offset>=1277 * windowInfo.bgZoom){
-          world_offset-=1277 * windowInfo.bgZoom;
-        }
-        $worldBg.css({
-          '-webkit-transform':'translate3d('+ -world_offset +'px, 0,0)',
-          '-moz-transform':'translate3d('+ -world_offset +'px, 0,0)',
-          '-o-transform':'translate3d('+ -world_offset +'px, 0,0)',
-          '-ms-transform':'translate3d('+ -world_offset +'px, 0,0)',
-          'transform':'translate3d('+ -world_offset +'px, 0,0)'
-        });
-        $laneBg.css({
-          'width': windowInfo.width + lane_offset,
-          '-webkit-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-          '-moz-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-          '-o-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-          '-ms-transform':'translate3d('+ -lane_offset +'px, 0,0)',
-          'transform':'translate3d('+ -lane_offset +'px, 0,0)'
-        });
-        myPath.addRandomNode();
-        $restTime.text((30 - time_offset/1000).toFixed(2));
-      }else{
-        timeline.stop();
-        showResult();
-      }
+      renderStage(timeOffsetInfo);
     });
 
     // charater control

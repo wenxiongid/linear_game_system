@@ -12,6 +12,7 @@ define([
     EV.call(_this);
     _this.startTime=0;
     _this.timeOffset=0;
+    _this.gapTimeOffset=0;
     _this.status='stop';
   };
 
@@ -45,17 +46,16 @@ define([
 
   TimeLine.prototype.updateTime=function(){
     var _this=this,
-      currentTimeOffset,
-      gapTimeOffset;
+      currentTimeOffset;
     if(_this.status=='running'){
       _this.runningTimer=w.requestAnimationFrame(function(){
         _this.updateTime();
       });
       currentTimeOffset=(new Date()).getTime() - _this.startTime;
-      gapTimeOffset=currentTimeOffset-_this.timeOffset;
+      _this.gapTimeOffset=currentTimeOffset-_this.timeOffset;
       _this.trigger('timeUpdate', {
         offset: _this.timeOffset,
-        d_offset: gapTimeOffset
+        d_offset: _this.gapTimeOffset
       });
       _this.timeOffset=currentTimeOffset;
     }

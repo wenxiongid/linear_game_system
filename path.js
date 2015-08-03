@@ -18,8 +18,60 @@ define([
     _this.width=_this.option.width;
   };
 
-  Path.prototype.draw=function(d_offset){
-    // var startTime=(new Date()).getTime();
+  Path.prototype.setNodePos=function(nodeInfo, lineIndex, isForce){
+    var _this=this,
+      drawInfo={},
+      lineInfo=_this.option.lineInfo[lineIndex];
+    drawInfo.x=Math.round(nodeInfo.offset- _this.offset);
+    drawInfo.y=Math.round(_this.option.lineInfo[lineIndex].y);
+    drawInfo.type=nodeInfo.type;
+    drawInfo.className=lineInfo.nodeClass[nodeInfo.type];
+    switch(nodeInfo.type){
+      case 2://gold
+        if(lineIndex==0){
+          drawInfo.y -= 80;
+        }
+        break;
+      case 1:
+      default:
+    }
+    drawInfo.img=_this.option.nodeInfo[nodeInfo.type][lineIndex];
+    if(!drawInfo.img.step && drawInfo.img.step!=0){
+      drawInfo.img.step=0;
+    }
+    drawInfo.img.step %= drawInfo.img.stepCount;
+    drawInfo.y -= drawInfo.img.height;
+    drawInfo.w=drawInfo.img.width;
+    drawInfo.h=drawInfo.img.height;
+    if(!nodeInfo.$el){
+      nodeInfo.$el=$('<div class="node '+ drawInfo.className+'"></div>');
+      nodeInfo.$el.appendTo(_this.$wrapper).css({
+        '-webkit-transform':'scale('+_this.zoom+')',
+        '-moz-transform':'scale('+_this.zoom+')',
+        '-o-transform':'scale('+_this.zoom+')',
+        '-ms-transform':'scale('+_this.zoom+')',
+        'transform':'scale('+_this.zoom+')',
+        top: drawInfo.y * _this.zoom,
+        left: (drawInfo.x + _this.offset) * _this.zoom
+      });
+    }else{
+      if(isForce){
+        nodeInfo.$el.appendTo(_this.$wrapper).css({
+          '-webkit-transform':'scale('+_this.zoom+')',
+          '-moz-transform':'scale('+_this.zoom+')',
+          '-o-transform':'scale('+_this.zoom+')',
+          '-ms-transform':'scale('+_this.zoom+')',
+          'transform':'scale('+_this.zoom+')',
+          top: drawInfo.y * _this.zoom,
+          left: (drawInfo.x + _this.offset) * _this.zoom
+        });
+      }
+    }
+
+    return drawInfo;
+  };
+
+  Path.prototype.draw=function(d_offset, isForce){
     var _this=this,
       offset=_this.offset+d_offset;
     _this.offset=offset;
@@ -31,7 +83,6 @@ define([
       '-ms-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
       'transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',      
     });
-    // _this.charaterImgData=_this.charater.ctx.getImageData(0, 0, _this.charater.canvas.width, _this.charater.canvas.height).data;
     
     var debug_node_count=0;
     $.each(_this.line, function(i, line){
@@ -46,52 +97,10 @@ define([
         while(line.length){
           node_info=line.splice(0,1)[0];
           node_draw_info={};
-          node_draw_info.x=Math.round(node_info.offset- _this.offset);
-          node_draw_info.y=Math.round(_this.option.lineInfo[i].y);
-          node_draw_info.type=node_info.type;
-          node_draw_info.className=line_info.nodeClass[node_info.type];
-          // if(!node_info.$el){
-          //   node_info.$el=$('<div class="node '+ node_draw_info.className+'"></div>');
-          // }
           
           if(node_info.offset>=_this.offset){
             if(node_info.offset<=_this.offset + _this.width){
-              switch(node_info.type){
-                case 2://gold
-                  if(i==0){
-                    node_draw_info.y -= 80;
-                  }
-                  break;
-                case 1:
-                default:
-              }
-              node_draw_info.img=_this.option.nodeInfo[node_info.type][i];
-              if(!node_draw_info.img.step && node_draw_info.img.step!=0){
-                node_draw_info.img.step=0;
-              }
-              node_draw_info.img.step %= node_draw_info.img.stepCount;
-              node_draw_info.y -= node_draw_info.img.height;
-              node_draw_info.w=node_draw_info.img.width;
-              node_draw_info.h=node_draw_info.img.height;
-              if(!node_info.$el){
-                node_info.$el=$('<div class="node '+ node_draw_info.className+'"></div>');
-                node_info.$el.appendTo(_this.$wrapper).css({
-                  '-webkit-transform':'scale('+_this.zoom+')',
-                  '-moz-transform':'scale('+_this.zoom+')',
-                  '-o-transform':'scale('+_this.zoom+')',
-                  '-ms-transform':'scale('+_this.zoom+')',
-                  'transform':'scale('+_this.zoom+')',
-                  top: node_draw_info.y * _this.zoom,
-                  left: (node_draw_info.x + _this.offset) * _this.zoom
-                });
-              }
-              // node_info.$el.css({
-              //   '-webkit-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-              //   '-moz-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-              //   '-o-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-              //   '-ms-transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)',
-              //   'transform':'scale('+_this.zoom+') translate3d('+node_draw_info.x+'px, '+node_draw_info.y+'px, 0px)'
-              // });
+              node_draw_info=_this.setNodePos(node_info, i, isForce);
               node_hit_info={
                 x: node_draw_info.x * _this.zoom,
                 y: node_draw_info.y * _this.zoom,
@@ -99,18 +108,6 @@ define([
                 h: node_draw_info.h * _this.zoom,
                 type: node_info.type
               };
-              // _this.ctx.drawImage(
-              //   node_draw_info.img.img,
-              //   0,
-              //   node_draw_info.img.height * node_draw_info.img.step,
-              //   node_draw_info.img.width,
-              //   node_draw_info.img.height,
-              //   node_draw_info.x,
-              //   node_draw_info.y,
-              //   node_draw_info.w,
-              //   node_draw_info.h
-              // );
-              // _this.pathImgData=_this.ctx.getImageData(0, 0, _this.canvas.width, _this.canvas.height).data;
               if(node_hit_info.x <= (_this.charater.hitRect.x + _this.charater.hitRect.w) && _this.checkHit(node_hit_info)){
                 if(node_info.$el){
                   node_info.$el.remove();
@@ -127,6 +124,10 @@ define([
               node_info.$el.remove();
               node_info.$el=null;
             }
+          }
+
+          if(isForce && node_info.$el){
+            _this.setNodePos(node_info, i, isForce);
           }
         }
         _this.line[i]=new_line;
