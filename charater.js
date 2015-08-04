@@ -57,9 +57,6 @@ define([
       if(_this.speed<_this.option.speedMax){
         _this.isUppingSpeed=true;
         _this.speed=_this.startSpeedUpSpeed + (currentTime - _this.startSpeedUpTime)/ 1000 * _this.option.accelerate;
-        w.requestAnimationFrame(function(){
-          _this.speedUp();
-        });
       }else{
         _this.isUppingSpeed=false;
         _this.speed=_this.option.speedMax;
@@ -153,6 +150,8 @@ define([
   Charater.prototype.drawHit=function(){
     var _this=this;
     clearTimeout(_this.actionTimer);
+    _this.speed=0;
+    _this.isUppingSpeed=false;
     _this.y=_this.charaterY;
     _this.type='hit';
   };
@@ -185,7 +184,9 @@ define([
       _this.y=newY;
       _this.type='air';
     }else{
-      _this.normal();
+      if(!_this.isHit){
+        _this.normal();
+      }
     }
   };
 
@@ -222,8 +223,8 @@ define([
         _this.startSpeedUpTime=null;
         if(!_this.isHit){
           _this.startSpeedUp();
+          _this.normal();
         }
-        _this.normal();
     }
   };
 

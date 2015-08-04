@@ -261,17 +261,19 @@ requirejs([
             break;
           case 1:
           default:
-            setTimeout(function(){
+            clearTimeout(_this.hitTimer);
+            _this.hitTimer=setTimeout(function(){
               getNode++;
               _this.speed=0;
               _this.isHit=true;
               _this.action('hit');
-              setTimeout(function(){
+              clearTimeout(_this.recoveryTimer);
+              _this.recoveryTimer=setTimeout(function(){
                 _this.startSpeedUpTime=null;
                 _this.isHit=false;
                 _this.action('normal');
                 _this.speed=0;
-                _this.startSpeedUp();
+                // _this.startSpeedUp();
               }, 1000);
             }, 10);
             
@@ -441,10 +443,13 @@ requirejs([
     });
     $('#slideBtn').on(Helper.mouseStartEvent, function(e){
       e.preventDefault();
-      myCharater.action('ground');
-      setTimeout(function(){
-        myCharater.action('normal');
-      }, 800);
+      if(myCharater.line=='normal'){
+        myCharater.action('ground');
+        clearTimeout(myCharater.actionTimer);
+        myCharater.actionTimer=setTimeout(function(){
+          myCharater.action('normal');
+        }, 800);
+      }
       return false;
     });
     // charater control end
