@@ -1,7 +1,9 @@
 define([
-  'jquery'
+  'jquery',
+  'megapix-image'
 ], function(
-  $
+  $,
+  MegaPixImage
 ){
   var ImgLoader=function(){
     var _this=this;
@@ -9,7 +11,7 @@ define([
     _this.imgList={};
   };
 
-  ImgLoader.prototype.load=function(src){
+  ImgLoader.prototype.load=function(src, refreshCache){
     var _this=this,
       loadDtd=$.Deferred(),
       loadPromise=loadDtd.promise(),

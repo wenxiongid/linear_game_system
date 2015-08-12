@@ -12,6 +12,7 @@ define([
   var Charater=function(el, timeline, option){
     var _this=this;
     _this.$el=$(el);
+    _this.$body=$('.body', _this.$el);
     _this.line='normal';
     _this.timeline=timeline;
     _this.option=$.extend({
@@ -144,6 +145,9 @@ define([
         '-ms-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
         'transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)'
       });
+    _this.$body.css({
+      'background-image': 'url('+charaterImg.img+')'
+    });
     charaterImg.step++;
   };
 

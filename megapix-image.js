@@ -35,6 +35,7 @@
    * Fixes a bug which squash image vertically while drawing into canvas for some images.
    */
   function detectVerticalSquash(img, iw, ih) {
+    return 1;// hotfix
     var canvas = document.createElement('canvas');
     canvas.width = 1;
     canvas.height = ih;
@@ -72,6 +73,7 @@
    */
   function renderImageToCanvas(img, canvas, options, doSquash) {
     var iw = img.naturalWidth, ih = img.naturalHeight;
+    if (!(iw+ih)) return;
     var width = options.width, height = options.height;
     var ctx = canvas.getContext('2d');
     ctx.save();
@@ -166,24 +168,24 @@
     }
   }
 
+  var URL = window.URL && window.URL.createObjectURL ? window.URL :
+            window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
+            null;
 
   /**
    * MegaPixImage class
    */
   function MegaPixImage(srcImage) {
     if (window.Blob && srcImage instanceof Blob) {
-      var img = new Image();
-      var URL = window.URL && window.URL.createObjectURL ? window.URL :
-                window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
-                null;
       if (!URL) { throw Error("No createObjectURL function found to create blob url"); }
+      var img = new Image();
       img.src = URL.createObjectURL(srcImage);
       this.blob = srcImage;
       srcImage = img;
     }
     if (!srcImage.naturalWidth && !srcImage.naturalHeight) {
       var _this = this;
-      srcImage.onload = function() {
+      srcImage.onload = srcImage.onerror = function() {
         var listeners = _this.imageLoadListeners;
         if (listeners) {
           _this.imageLoadListeners = null;
@@ -242,6 +244,10 @@
     if (callback) {
       callback();
     }
+    if (this.blob) {
+      this.blob = null;
+      URL.revokeObjectURL(this.srcImage.src);
+    }
   };
 
   /**
@@ -249,6 +255,8 @@
    */
   if (typeof define === 'function' && define.amd) {
     define([], function() { return MegaPixImage; }); // for AMD loader
+  } else if (typeof exports === 'object') {
+    module.exports = MegaPixImage; // for CommonJS
   } else {
     this.MegaPixImage = MegaPixImage;
   }

@@ -73,52 +73,76 @@ body,
   background-repeat: no-repeat;
   .face{
     position: absolute;
-    top: 70px;
-    left: 55px;
-    width: 50px;
+    top: 62px;
+    left: 42px;
+    width: 73px;
+    height: 55px;
+    overflow: hidden;
+    .lh-border-radius(30);
+    background-color: #fff;
+    &.color-face{
+      background-color: #c28975;
+    }
+    .face-img{
+      position: absolute;
+      width: 73px;
+      top: 0;
+      left: 0;
+    }
+  }
+  .body{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
   }
   .lh-transform-origin(0 0);
   &.stand{
-    background-image: url('img/stand.png');
     width: 132px;
     height: 218px;
   }
   &.walk{
-    background-image: url('img/walk.png');
     width: 132px;
     height: 220px;
-    .lh-animation(~'walk 800ms infinite linear');
+    .body{
+      .lh-animation(~'walk 800ms infinite linear');
+    }
     .face{
       .lh-animation(~'walkface 800ms infinite linear');
     }
   }
   &.run{
-    background-image: url('img/run.png');
     width: 161px;
     height: 241px;
-    .lh-animation(~'run 600ms infinite linear');
+    .body{
+      .lh-animation(~'run 600ms infinite linear');
+    }
     .face{
+      top: 59px;
+      left: 37px;
       .lh-animation(~'runface 600ms infinite linear');
     }
   }
   &.jump{
-    background-image: url('img/jump.png'); 
     width: 132px;
     height: 195px;
   }
   &.slide{
-    background-image: url('img/slide.png');
     width: 231px;
     height: 179px;
     .face{
+      left: 40px;
       .lh-transform(~'translate(40px, 10px) rotate(-20deg)');
     }
   }
   &.hit{
-    background-image: url('img/hit.png');
+    // background-image: url('img/hit.png');
     width: 221px;
     height: 172px;
     .face{
+      top: 57px;
+      left: 41px;
       .lh-transform(~'translate(55px, 30px) rotate(20deg)');
     }
   }
@@ -388,7 +412,8 @@ body,
 
 
 .paused{
-  .charaterC,
+  .charaterC .body,
+  .charaterC .face,
   .air-node{
     .lh-animation-play-state(paused);
   }

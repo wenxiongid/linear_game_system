@@ -4,7 +4,7 @@ requirejs([
   'timeline',
   'path',
   'charater',
-  'img_loader',
+  'img_storage',
   'wechat_config',
   'face'
 ], function(
@@ -13,7 +13,7 @@ requirejs([
   TimeLine,
   Path,
   Character,
-  ImgLoader,
+  ImgStorage,
   WeChatInfo,
   Face
 ){
@@ -54,7 +54,6 @@ requirejs([
     myCharater,
     getPoint=0,
     getNode=0,
-    myImgLoader=new ImgLoader(),
     stageHeight=600,
     timeline=new TimeLine(),
     myPath,
@@ -289,15 +288,15 @@ requirejs([
     };
 
     $.when(
-      myImgLoader.load('img/stand.png'),
-      myImgLoader.load('img/walk.png'),
-      myImgLoader.load('img/run.png'),
-      myImgLoader.load('img/jump.png'),
-      myImgLoader.load('img/slide.png'),
-      myImgLoader.load('img/hit.png'),
-      myImgLoader.load('img/gold.png'),
-      myImgLoader.load('img/a_node.png'),
-      myImgLoader.load('img/g_node.png')
+      ImgStorage.getImage('img/stand_c.png'),
+      ImgStorage.getImage('img/walk_c.png'),
+      ImgStorage.getImage('img/run_c.png'),
+      ImgStorage.getImage('img/jump_c.png'),
+      ImgStorage.getImage('img/slide_c.png'),
+      ImgStorage.getImage('img/hit_c.png'),
+      ImgStorage.getImage('img/gold.png'),
+      ImgStorage.getImage('img/a_node.png'),
+      ImgStorage.getImage('img/g_node.png')
     ).done(function(
       standImg,
       walkImg,
@@ -490,14 +489,16 @@ requirejs([
       eye1: '#eye1',
       eye2: '#eye2',
       mouth: '#mouth'
-    }, '#adstractContainer');
+    }, '#adstractContainer', {
+      colorMode: true
+    });
     gameFace.bind('load_complete', function(){
       $('#imgAdjustFrame').removeClass('hide').siblings('.frame').addClass('hide');
     }).bind('face_ready', function(){
       $('#faceAdstractFrame').removeClass('hide').siblings('.frame').addClass('hide');
     }).bind('face_complete', function(faceUrl){
       $('#startFrame').removeClass('hide').siblings('.frame').addClass('hide');
-      $('<img src="'+faceUrl+'" class="face" />').appendTo($charater);
+      $('.face', $charater).addClass('color-face').append('<img src="'+faceUrl+'" class="face-img" />');
       pageType='hori';
       $(window).trigger('resize');
     });
@@ -522,7 +523,6 @@ requirejs([
     $('#faceAdstractFrame .submit-btn').on(Helper.mouseStartEvent, function(e){
       gameFace.adstract();
     });
-    // face end
-    
+    // face end 
   });
 });
