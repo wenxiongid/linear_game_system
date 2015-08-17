@@ -72,10 +72,6 @@ define([
       default:
     }
     drawInfo.img=_this.option.nodeInfo[nodeInfo.type][lineIndex];
-    if(!drawInfo.img.step && drawInfo.img.step!=0){
-      drawInfo.img.step=0;
-    }
-    drawInfo.img.step %= drawInfo.img.stepCount;
     drawInfo.y -= drawInfo.img.height;
     drawInfo.w=drawInfo.img.width;
     drawInfo.h=drawInfo.img.height;
@@ -89,7 +85,9 @@ define([
     cssParam[_this.posParam.y]=drawInfo.y * _this.zoom;
     cssParam[_this.posParam.x]=(drawInfo.x + _this.offset) * _this.zoom;
     if(!nodeInfo.$el){
-      nodeInfo.$el=$('<div class="node '+ drawInfo.className+'"></div>');
+      nodeInfo.$el=$('<div class="node '+ drawInfo.className+'"></div>').css({
+        'background-image': 'url('+drawInfo.img.img+')'
+      });
       nodeInfo.$el.appendTo(_this.$wrapper).css(cssParam);
     }else{
       if(isForce){
