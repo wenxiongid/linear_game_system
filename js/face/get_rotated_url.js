@@ -1,7 +1,7 @@
 define([
   'jquery',
-  'megapix-image',
-  'exif'
+  'lib/megapix-image',
+  'lib/exif'
 ], function(
   $,
   MegaPixImage,

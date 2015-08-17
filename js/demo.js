@@ -5,8 +5,8 @@ requirejs([
   'path',
   'charater',
   'img_storage',
-  'wechat_config',
-  'face'
+  'wechat/wechat_config',
+  'face/face'
 ], function(
   $,
   Helper,

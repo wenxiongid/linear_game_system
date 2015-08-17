@@ -1,9 +1,9 @@
 define([
   'jquery',
-  'get_rotated_url',
+  'face/get_rotated_url',
   'event',
   'helper',
-  'face_tmpl_info'
+  'face/face_tmpl_info'
 ], function(
   $,
   getRotatedUrl,
@@ -34,7 +34,7 @@ define([
 
   FaceController.prototype.init = function() {
     var _this = this;
-    _this.$adstractContainer.append('<img src="tmpl_img/'+_this.nakeInfo.img+'" />').css({
+    _this.$adstractContainer.append('<img src="js/face/tmpl_img/'+_this.nakeInfo.img+'" />').css({
       'width': _this.nakeInfo.width,
       'height': _this.nakeInfo.height,
       'margin-left': -_this.nakeInfo.width / 2 + 'px'
@@ -377,7 +377,7 @@ define([
       ctx.putImageData(imgArr, 0, 0, 0, 0, canvas.width, canvas.height);
       _this.trigger('face_complete', canvas.toDataURL());
     };
-    tempImg.src='tmpl_img/'+_this.nakeInfo.img;
+    tempImg.src='js/face/tmpl_img/'+_this.nakeInfo.img;
   };
 
   return FaceController;
