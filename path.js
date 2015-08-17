@@ -3,25 +3,61 @@ define([
 ], function(
   $
 ){
-  var Path=function(wrapper, charater, option){
+  var Path=function(wrapper, charater, direction, option){
     var _this=this;
     _this.$wrapper=$(wrapper);
     _this.charater=charater;
     _this.line={};
-    // _this.width=canvas.width;
     _this.offset=0;
+    _this.direction= direction || 1;//[0, 1, 2, 3]
+    switch(_this.direction){
+      case 0:
+      case '0':
+        _this.posParam={
+          x: 'left',
+          y: 'bottom'
+        };
+        break;
+      case 1:
+      case '1':
+        _this.posParam={
+          x: 'left',
+          y: 'top'
+        };
+        break;
+      case 2:
+      case '2':
+        _this.posParam={
+          x: 'left',
+          y: 'top'
+        };
+        break;
+      case 3:
+      case '3':
+        _this.posParam={
+          x: 'right',
+          y: 'top'
+        };
+        break;
+    }
     _this.option=$.extend({
       lineInfo:[],
       zoom: 1
     }, option || {});
     _this.zoom=_this.option.zoom;
-    _this.width=_this.option.width;
+    if(_this.option.width){
+     _this.width=_this.option.width;
+    }
+    if(_this.option.height){
+     _this.height=_this.option.height;
+    }
   };
 
   Path.prototype.setNodePos=function(nodeInfo, lineIndex, isForce){
     var _this=this,
       drawInfo={},
-      lineInfo=_this.option.lineInfo[lineIndex];
+      lineInfo=_this.option.lineInfo[lineIndex],
+      cssParam={};
     drawInfo.x=Math.round(nodeInfo.offset- _this.offset);
     drawInfo.y=Math.round(_this.option.lineInfo[lineIndex].y);
     drawInfo.type=nodeInfo.type;
@@ -43,28 +79,21 @@ define([
     drawInfo.y -= drawInfo.img.height;
     drawInfo.w=drawInfo.img.width;
     drawInfo.h=drawInfo.img.height;
+    cssParam={
+      '-webkit-transform':'scale('+_this.zoom+')',
+      '-moz-transform':'scale('+_this.zoom+')',
+      '-o-transform':'scale('+_this.zoom+')',
+      '-ms-transform':'scale('+_this.zoom+')',
+      'transform':'scale('+_this.zoom+')'
+    };
+    cssParam[_this.posParam.y]=drawInfo.y * _this.zoom;
+    cssParam[_this.posParam.x]=(drawInfo.x + _this.offset) * _this.zoom;
     if(!nodeInfo.$el){
       nodeInfo.$el=$('<div class="node '+ drawInfo.className+'"></div>');
-      nodeInfo.$el.appendTo(_this.$wrapper).css({
-        '-webkit-transform':'scale('+_this.zoom+')',
-        '-moz-transform':'scale('+_this.zoom+')',
-        '-o-transform':'scale('+_this.zoom+')',
-        '-ms-transform':'scale('+_this.zoom+')',
-        'transform':'scale('+_this.zoom+')',
-        top: drawInfo.y * _this.zoom,
-        left: (drawInfo.x + _this.offset) * _this.zoom
-      });
+      nodeInfo.$el.appendTo(_this.$wrapper).css(cssParam);
     }else{
       if(isForce){
-        nodeInfo.$el.appendTo(_this.$wrapper).css({
-          '-webkit-transform':'scale('+_this.zoom+')',
-          '-moz-transform':'scale('+_this.zoom+')',
-          '-o-transform':'scale('+_this.zoom+')',
-          '-ms-transform':'scale('+_this.zoom+')',
-          'transform':'scale('+_this.zoom+')',
-          top: drawInfo.y * _this.zoom,
-          left: (drawInfo.x + _this.offset) * _this.zoom
-        });
+        nodeInfo.$el.appendTo(_this.$wrapper).css(cssParam);
       }
     }
 
@@ -73,16 +102,22 @@ define([
 
   Path.prototype.draw=function(d_offset, isForce){
     var _this=this,
-      offset=_this.offset+d_offset;
+      offset=_this.offset+d_offset,
+      wrapperCssParam={
+        '-webkit-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+        '-moz-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+        '-o-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+        '-ms-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+        'transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
+      };
+      if(_this.width){
+        wrapperCssParam.width=(_this.width + _this.offset) * _this.zoom;
+      }
+      if(_this.height){
+        wrapperCssParam.height=(_this.height + _this.offset) * _this.zoom;
+      }
     _this.offset=offset;
-    _this.$wrapper.css({
-      width: (_this.width + _this.offset) * _this.zoom,
-      '-webkit-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
-      '-moz-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
-      '-o-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
-      '-ms-transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',
-      'transform':'translate3d('+ -_this.offset * _this.zoom+'px, 0px, 0px)',      
-    });
+    _this.$wrapper.css(wrapperCssParam);
     
     var debug_node_count=0;
     $.each(_this.line, function(i, line){
@@ -134,7 +169,6 @@ define([
         debug_node_count+=new_line.length;
       }
     });
-    // console.log('duration: '+((new Date()).getTime() - startTime) +', node count: '+debug_node_count);
   };
 
   Path.prototype.addNode=function(lineIndex, offset, type){

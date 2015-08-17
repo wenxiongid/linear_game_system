@@ -385,7 +385,7 @@ requirejs([
       });
       myCharater.render();
 
-      myPath=new Path($nodeWrapper, myCharater, {
+      myPath=new Path($nodeWrapper, myCharater, 1, {
         zoom: windowInfo.stageZoom,
         width: windowInfo.width / windowInfo.stageZoom,
         lineInfo: [{
