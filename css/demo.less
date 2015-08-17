@@ -16,7 +16,7 @@ body,
 #viewport{
   position: relative;
 }
-.lh-keyframes(~'flynode, 0%{background-position: 0 0px;} 49.99%{background-position: 0 0px;} 50%{background-position: 0 -116px;} 100%{background-position: 0 -116px;}');
+.lh-keyframes(~'flynode, 0%{background-position: 0 0px;} 50%{background-position: 0 -116px;} 100%{background-position: 0 -232px;}');
 
 #nodeWrapper{
   position: absolute;
@@ -34,7 +34,7 @@ body,
 }
 .air-node{
   background-image: url('../img/a_node.png');
-  .lh-animation(~'flynode 1s infinite linear');
+  .lh-animation(~'flynode 1s infinite steps(1)');
   width: 102px;
   height: 116px;
 }
@@ -61,10 +61,10 @@ body,
   top: 0;
   left: 0;
 }
-.lh-keyframes(~'walk, 0%{background-position: 0 0px;} 24.99%{background-position: 0 0px;} 25%{background-position: 0 -220px;} 49.99%{background-position: 0 -220px;} 50%{background-position: 0 -440px;} 74.99%{background-position: 0 -440px;} 75%{background-position: 0 -660px;} 100%{background-position: 0 -660px;}');
-.lh-keyframes(~'walkface, 0%{transform: translate(0px, 0px);} 24.99%{transform: translate(0px, 0px);} 25%{transform: translate(0px, 2px)} 49.99%{transform: translate(0px, 2px)} 50%{transform: translate(0px, 0px);} 74.99%{transform: translate(0px, 0px);} 75%{transform: translate(px, 2px);} 100%{transform: translate(0px, 2px);}');
-.lh-keyframes(~'run, 0%{background-position: 0 0px;} 24.99%{background-position: 0 0px;} 25%{background-position: 0 -241px;} 49.99%{background-position: 0 -241px;} 50%{background-position: 0 -482px;} 74.99%{background-position: 0 -482px;} 75%{background-position: 0 -723px;} 100%{background-position: 0 -723px;}');
-.lh-keyframes(~'runface, 0%{transform: translate(25px, 15px) rotate(-10deg);} 24.99%{transform: translate(25px, 15px) rotate(-10deg);} 25%{transform: translate(25px, 18px) rotate(-10deg);} 49.99%{transform: translate(25px, 18px) rotate(-10deg);} 50%{transform: translate(25px, 15px) rotate(-10deg);} 74.99%{transform: translate(25px, 15px) rotate(-10deg);} 75%{transform: translate(25px, 18px) rotate(-10deg);} 100%{transform: translate(25px, 18px) rotate(-10deg);}');
+.lh-keyframes(~'walk, 0%{background-position: 0 0px;} 25%{background-position: 0 -220px;} 50%{background-position: 0 -440px;} 75%{background-position: 0 -660px;} 100%{background-position: 0 -880px;}');
+.lh-keyframes(~'walkface, 0%{transform: translate(0px, 0px);} 25%{transform: translate(0px, 2px)} 50%{transform: translate(0px, 0px);} 75%{transform: translate(px, 2px);} 100%{transform: translate(0px, 0px);}');
+.lh-keyframes(~'run, 0%{background-position: 0 0px;} 25%{background-position: 0 -241px;} 50%{background-position: 0 -482px;} 75%{background-position: 0 -723px;} 100%{background-position: 0 0px;}');
+.lh-keyframes(~'runface, 0%{transform: translate(25px, 15px) rotate(-10deg);} 25%{transform: translate(25px, 18px) rotate(-10deg);} 50%{transform: translate(25px, 15px) rotate(-10deg);} 75%{transform: translate(25px, 18px) rotate(-10deg);} 100%{transform: translate(25px, 15px) rotate(-10deg);}');
 
 .charaterC{
   position: absolute;
@@ -106,22 +106,22 @@ body,
     width: 132px;
     height: 220px;
     .body{
-      .lh-animation(~'walk 800ms infinite linear');
+      .lh-animation(~'walk 800ms infinite steps(1)');
     }
     .face{
-      .lh-animation(~'walkface 800ms infinite linear');
+      .lh-animation(~'walkface 800ms infinite steps(1)');
     }
   }
   &.run{
     width: 161px;
     height: 241px;
     .body{
-      .lh-animation(~'run 600ms infinite linear');
+      .lh-animation(~'run 600ms infinite steps(1)');
     }
     .face{
       top: 59px;
       left: 37px;
-      .lh-animation(~'runface 600ms infinite linear');
+      .lh-animation(~'runface 600ms infinite steps(1)');
     }
   }
   &.jump{
