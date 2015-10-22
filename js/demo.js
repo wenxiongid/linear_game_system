@@ -508,7 +508,7 @@ requirejs([
       pageType='hori';
       $(window).trigger('resize');
     });
-    $('.select-face-btn').on('tap', function(e){
+    $('.select-face-btn').on('click', function(e){
       $('#faceImg').click();
     });
     $('.retake-btn').on(Helper.mouseStartEvent, function(e){
