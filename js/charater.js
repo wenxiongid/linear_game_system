@@ -208,12 +208,12 @@ define([
     var _this=this;
     switch(type){
       case 'air':
-        if(_this.line=='normal' || !_this.isHit){
+        if(_this.line=='normal' && !_this.isHit){
           _this.air();
         }
         break;
       case 'ground':
-        if(_this.line=='normal' || !_this.isHit){
+        if(_this.line=='normal' && !_this.isHit){
           _this.ground();
         }
         break;

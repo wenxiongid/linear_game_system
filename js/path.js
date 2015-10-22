@@ -116,7 +116,7 @@ define([
       }
     _this.offset=offset;
     _this.$wrapper.css(wrapperCssParam);
-    
+
     var debug_node_count=0;
     $.each(_this.line, function(i, line){
       var new_line=[],
@@ -125,12 +125,12 @@ define([
         node_draw_info={},
         line_info,
         node_hit_info={},
-        node_class='';  
+        node_class='';
       if(line_info=_this.option.lineInfo[i]){
         while(line.length){
           node_info=line.splice(0,1)[0];
           node_draw_info={};
-          
+
           if(node_info.offset>=_this.offset){
             if(node_info.offset<=_this.offset + _this.width){
               node_draw_info=_this.setNodePos(node_info, i, isForce);

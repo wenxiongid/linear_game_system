@@ -508,7 +508,7 @@ requirejs([
       pageType='hori';
       $(window).trigger('resize');
     });
-    $('.select-face-btn').on(Helper.mouseStartEvent, function(e){
+    $('.select-face-btn').on('tap', function(e){
       $('#faceImg').click();
     });
     $('.retake-btn').on(Helper.mouseStartEvent, function(e){
@@ -523,6 +523,6 @@ requirejs([
     $('#faceAdstractFrame .submit-btn').on(Helper.mouseStartEvent, function(e){
       gameFace.adstract();
     });
-    // face end 
+    // face end
   });
 });
