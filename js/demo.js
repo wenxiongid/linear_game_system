@@ -25,7 +25,7 @@ requirejs([
     $('#result').text(point);
   }
   function showResult(){
-    $restTime.text('0.00');
+    // $restTime.text('0.00');
     myCharater.action('stand');
     $('#resultMask').show();
     $('.result-gold').text(getPoint);
@@ -62,7 +62,8 @@ requirejs([
       bgZoom:1,
       stageZoom: 1
     },
-    pageType='vert';
+    pageType='vert',
+    gameIsOver = false;
 
   $(function(){
     // page view fixed
@@ -93,7 +94,7 @@ requirejs([
       };
     })();
     // dom var init end
-    
+
     // stage render
     var renderStage=function(timeOffsetInfo, isForce){
       var current_d_offset=0,
@@ -104,7 +105,7 @@ requirejs([
         current_d_offset=timeOffsetInfo.d_offset || 0;
         time_offset=timeOffsetInfo.offset || 0;
       }
-      if(time_offset<30 * 1000){
+      if(!gameIsOver){
         if(myPath){
           world_offset=myPath.offset*0.1;
           lane_offset=myPath.offset * windowInfo.stageZoom;
@@ -118,7 +119,7 @@ requirejs([
         if(myCharater){
           myCharater.render();
         }
-        
+
         while(world_offset>=1277 * windowInfo.bgZoom){
           world_offset-=1277 * windowInfo.bgZoom;
         }
@@ -137,7 +138,7 @@ requirejs([
           '-ms-transform':'translate3d('+ -lane_offset +'px, 0,0)',
           'transform':'translate3d('+ -lane_offset +'px, 0,0)'
         });
-        $restTime.text((30 - time_offset/1000).toFixed(2));
+        $restTime.text((time_offset / 1000).toFixed(2));
       }else{
         timeline.stop();
         showResult();
@@ -153,7 +154,7 @@ requirejs([
       windowInfo.width=w;
       windowInfo.stageZoom=h / stageHeight;
       windowInfo.bgZoom=h / 689;
-      
+
       switch(pageType){
         case 'vert':
           if(w>h){
@@ -194,7 +195,7 @@ requirejs([
 
     var charater_path_init=function(){
       myPath.nodeFrequence=0.03;// (0, 1]
-      myPath.goldFrequence=1;// (0, 1]
+      myPath.goldFrequence=0.01;// (0, 1]
       myPath.lineCount=2;
       myPath.grid=100;
       myPath.lastNode=Math.ceil(myPath.width / myPath.grid) * myPath.grid;
@@ -206,26 +207,27 @@ requirejs([
           current_gold_node_offset,
           current_node_offset,
           node_insert_line_index;
+        // add gold node
         if(goldAddLine<_this.lineCount){
-          current_gold_node_offset=_this.lastGoldNode + _this.grid;
-          if(current_gold_node_offset<startGridOffset){
-            current_gold_node_offset=startGridOffset;
+          current_gold_node_offset=_this.lastGoldNode + 9 * _this.grid;
+          if(current_gold_node_offset < startGridOffset){
+            current_gold_node_offset = startGridOffset;
           }
           if(current_gold_node_offset<startGridOffset + 12 * _this.grid){
             _this.lastGoldNode=current_gold_node_offset;
             _this.addNode(goldAddLine, current_gold_node_offset, 2);
           }
         }
+        // add node
         if(Math.random()<_this.nodeFrequence){
           current_node_offset= _this.lastNode+(9+Math.floor(Math.random()*3)) * _this.grid;
           if(current_node_offset<startGridOffset){
             current_node_offset=startGridOffset;
           }
-          
+
           node_insert_line_index=Math.floor(Math.random() * _this.lineCount);
           if(_this.addNode(node_insert_line_index, current_node_offset, 1)){
             _this.lastNode=current_node_offset;
-            _this.addNode(1-node_insert_line_index, _this.lastNode, 2);
           }else{
             $.each(_this.line, function(i, line){
               var has_position=true;
@@ -246,7 +248,6 @@ requirejs([
             if(node_insert_line_index>=0){
               _this.lastNode=current_node_offset;
               _this.addNode(node_insert_line_index, _this.lastNode, 1);
-              _this.addNode(1-node_insert_line_index, _this.lastNode, 2);
             }
           }
         }
@@ -256,6 +257,11 @@ requirejs([
         switch(type){
           case 2:
             updateResult(++getPoint);
+            if(getPoint >= 5){
+              setTimeout(function(){
+                gameIsOver = true;
+              }, 200);
+            }
             break;
           case 1:
           default:
@@ -271,7 +277,6 @@ requirejs([
                 _this.isHit=false;
                 _this.speed=0;
                 _this.action('normal');
-                // _this.startSpeedUp();
               }, 1000);
             }, 10);
         }
@@ -450,7 +455,7 @@ requirejs([
       return false;
     });
     // charater control end
-    
+
     // game time control
     $('#pauseStartBtn').on(Helper.mouseStartEvent, function(e){
       e.preventDefault();
@@ -481,7 +486,7 @@ requirejs([
       return false;
     });
     // game start end
-    
+
     // face
     var gameFace=new Face('#faceImg', '#oImgContainer', {
       eye1: '#eye1',
