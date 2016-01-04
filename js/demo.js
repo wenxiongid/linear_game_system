@@ -191,7 +191,7 @@ requirejs([
       }, true);
       initBg(w);
     }).trigger('resize');
-    
+
     var charater_path_init=function(){
       myPath.nodeFrequence=0.03;// (0, 1]
       myPath.goldFrequence=1;// (0, 1]
@@ -208,12 +208,12 @@ requirejs([
           node_insert_line_index;
         if(goldAddLine<_this.lineCount){
           current_gold_node_offset=_this.lastGoldNode + _this.grid;
-          if(_this.lastGoldNode<startGridOffset){
+          if(current_gold_node_offset<startGridOffset){
             current_gold_node_offset=startGridOffset;
           }
           if(current_gold_node_offset<startGridOffset + 12 * _this.grid){
             _this.lastGoldNode=current_gold_node_offset;
-            _this.addNode(goldAddLine, _this.lastGoldNode, 2);
+            _this.addNode(goldAddLine, current_gold_node_offset, 2);
           }
         }
         if(Math.random()<_this.nodeFrequence){
@@ -250,7 +250,6 @@ requirejs([
             }
           }
         }
-        
       };
       myCharater.hit=function(type){
         var _this=this;
@@ -270,12 +269,11 @@ requirejs([
               _this.recoveryTimer=setTimeout(function(){
                 _this.startSpeedUpTime=null;
                 _this.isHit=false;
-                _this.action('normal');
                 _this.speed=0;
+                _this.action('normal');
                 // _this.startSpeedUp();
               }, 1000);
             }, 10);
-            
         }
       };
 
