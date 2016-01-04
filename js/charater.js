@@ -25,6 +25,18 @@ define([
     _this.g=500;
     _this.speed=0;
     _this.actionTimer=0;
+    _this.cBodyList={};
+    $.each(_this.option, function(key, val){
+      var $cBody;
+      if(val.img && val.hitRect){
+        $cBody = $('<div class="c-body"></div>').css({
+          'background-image': 'url('+ val.img +')',
+          'visibility': 'hidden'
+        });
+        $cBody.appendTo(_this.$body);
+        _this.cBodyList[key.replace('Img', '')] = $cBody;
+      }
+    });
 
     _this.y=0;
   };
@@ -135,6 +147,13 @@ define([
       w: charaterImg.hitRect.w * _this.zoom,
       h: charaterImg.hitRect.h * _this.zoom
     };
+    $.each(_this.cBodyList, function(name, $cBody){
+      if(name == charaterClassName){
+        $cBody.css('visibility', 'visible');
+      }else{
+        $cBody.css('visibility', 'hidden');
+      }
+    });
     _this.$el
       .removeClass('jump slide hit run walk stand')
       .addClass(charaterClassName)
@@ -145,9 +164,6 @@ define([
         '-ms-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
         'transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)'
       });
-    _this.$body.css({
-      'background-image': 'url('+charaterImg.img+')'
-    });
     charaterImg.step++;
   };
 
