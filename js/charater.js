@@ -16,13 +16,13 @@ define([
     _this.line='normal';
     _this.timeline=timeline;
     _this.option=$.extend({
-      speedMax: 0.5,
-      accelerate: 0.1,
+      speedMax: 0.6,
+      accelerate: 0.12,
       hitPoint: 250
     }, option || {});
     _this.zoom=_this.option.zoom;
-    _this.vY0=350;
-    _this.g=500;
+    _this.vY0=500;
+    _this.g=1000;
     _this.speed=0;
     _this.actionTimer=0;
     _this.cBodyList={};
@@ -79,7 +79,7 @@ define([
 
   Charater.prototype.render=function(){
     var _this=this;
-    if(_this.line=='air'){
+    if(_this.line=='air' && !_this.isHit){
       _this.changeAirPos();
     }
     _this.updateSpeed();
@@ -91,11 +91,13 @@ define([
       charaterImg,
       charaterClassName,
       rotate=0,
-      x=0;
+      x=0,
+      currentStatus;
     _this.charaterY=y;
     if(_this.isHit){
       charaterClassName='hit';
       charaterImg=_this.option.hitImg;
+      _this.fallDown();
       if(_this.line=='ground'){
         y=-57;
       }else{
@@ -105,15 +107,18 @@ define([
       switch(type){
         case 'air':
           charaterClassName='jump';
+          currentStatus='jump';
           charaterImg=_this.option.jumpImg;
           break;
         case 'ground':
           charaterClassName='slide';
+          currentStatus='slide';
           charaterImg=_this.option.slideImg;
           y-=10;
           break;
         case 'hit':
           charaterClassName='hit';
+          currentStatus='hit';
           charaterImg=_this.option.hitImg;
           break;
         case 'normal':
@@ -122,6 +127,7 @@ define([
           switch(true){
             case _this.speed>0.4:
               charaterClassName='run';
+              currentStatus='run';
               charaterImg=_this.option.runImg;
               rotate=15;
               y=32;
@@ -129,18 +135,16 @@ define([
               break;
             case _this.speed>0 && _this.speed<=0.4:
               charaterClassName='walk';
+              currentStatus='walk';
               charaterImg=_this.option.walkImg;
               break;
             default:
               charaterClassName='stand';
+              currentStatus='stand';
               charaterImg=_this.option.standImg;
           }
       }
     }
-    if(!charaterImg.step && charaterImg.step!=0){
-      charaterImg.step=0;
-    }
-    charaterImg.step %= charaterImg.stepCount;
     _this.hitRect={
       x: (_this.option.hitPoint-charaterImg.width + charaterImg.hitRect.offsetX) * _this.zoom,
       y: (320-y + charaterImg.hitRect.offsetY) * _this.zoom,
@@ -172,8 +176,28 @@ define([
     clearTimeout(_this.actionTimer);
     _this.speed=0;
     _this.isUppingSpeed=false;
-    _this.y=_this.charaterY;
     _this.type='hit';
+    _this.fallDownTime=(new Date()).getTime();
+    _this.fallDownHeight = _this.y;
+  };
+
+  Charater.prototype.fallDown=function(){
+    var _this = this,
+      currentTime = (new Date()).getTime(),
+      airTime,
+      newY;
+    if(_this.fallDownTime){
+      airTime = (currentTime - _this.fallDownTime) / 1000;
+    }
+    if(_this.y>0){
+      newY = _this.fallDownHeight - _this.g * 3 * airTime * airTime / 2;
+      if(newY<0){
+        newY = 0;
+      }
+      _this.y = newY;
+    }else{
+      _this.y = 0;
+    }
   };
 
   Charater.prototype.normal=function(){
@@ -200,6 +224,9 @@ define([
       currentAirTime=(new Date()).getTime(),
       airTime=(currentAirTime-_this.startAirTime)/1000,
       newY=_this.vY0*airTime - _this.g * airTime * airTime / 2;
+    if(_this.isHit){
+      newY=0;
+    }
     if(newY>=0){
       _this.y=newY;
       _this.type='air';
@@ -231,6 +258,9 @@ define([
       case 'ground':
         if(_this.line=='normal' && !_this.isHit){
           _this.ground();
+          _this.actionTimer= setTimeout(function(){
+            _this.action('normal');
+          }, 1000);
         }
         break;
       case 'hit':

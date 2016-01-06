@@ -18,7 +18,7 @@ requirejs([
   Face
 ){
   // wechat init
-  var myWeChatInfo=new WeChatInfo('wx90c209e66b64c9dd');
+  // var myWeChatInfo=new WeChatInfo('wx90c209e66b64c9dd');
 
   // UI display
   function updateResult(point){
@@ -195,7 +195,7 @@ requirejs([
 
     var charater_path_init=function(){
       myPath.nodeFrequence=0.03;// (0, 1]
-      myPath.goldFrequence=0.01;// (0, 1]
+      myPath.goldFrequence=1;// (0, 1]
       myPath.lineCount=2;
       myPath.grid=100;
       myPath.lastNode=Math.ceil(myPath.width / myPath.grid) * myPath.grid;
