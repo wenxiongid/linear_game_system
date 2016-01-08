@@ -16,13 +16,13 @@ define([
     _this.line='normal';
     _this.timeline=timeline;
     _this.option=$.extend({
-      speedMax: 0.6,
-      accelerate: 0.12,
+      speedMax: 0.8,
+      accelerate: 0.8,
       hitPoint: 250
     }, option || {});
     _this.zoom=_this.option.zoom;
-    _this.vY0=500;
-    _this.g=1000;
+    _this.vY0=650;
+    _this.g=1300;
     _this.speed=0;
     _this.actionTimer=0;
     _this.cBodyList={};
