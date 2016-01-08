@@ -4,22 +4,15 @@ requirejs([
   'timeline',
   'path',
   'charater',
-  'img_storage',
-  'wechat/wechat_config',
-  'face/face'
+  'img_storage'
 ], function(
   $,
   Helper,
   TimeLine,
   Path,
   Character,
-  ImgStorage,
-  WeChatInfo,
-  Face
+  ImgStorage
 ){
-  // wechat init
-  // var myWeChatInfo=new WeChatInfo('wx90c209e66b64c9dd');
-
   // UI display
   function updateResult(point){
     $('#result').text(point);
@@ -62,7 +55,7 @@ requirejs([
       bgZoom:1,
       stageZoom: 1
     },
-    pageType='vert',
+    pageType='hori',
     gameIsOver = false;
 
   $(function(){
@@ -297,7 +290,7 @@ requirejs([
       ImgStorage.getImage('img/jump_c.png'),
       ImgStorage.getImage('img/slide_c.png'),
       ImgStorage.getImage('img/hit_c.png'),
-      ImgStorage.getImage('img/gold.png'),
+      ImgStorage.getImage('img/618logo_s.png'),
       ImgStorage.getImage('img/a_node.png'),
       ImgStorage.getImage('img/g_node.png')
     ).done(function(
@@ -418,13 +411,13 @@ requirejs([
           }],
           2: [{
             img: goldImg,
-            width: 56,
-            height: 68,
+            width: 70,
+            height: 63,
             stepCount: 1
           }, {
             img: goldImg,
-            width: 56,
-            height: 68,
+            width: 70,
+            height: 63,
             stepCount: 1
           }]
         }
@@ -486,46 +479,5 @@ requirejs([
       return false;
     });
     // game start end
-
-    // face
-    var gameFace=new Face('#faceImg', '#oImgContainer', {
-      eye1: '#eye1',
-      eye2: '#eye2',
-      mouth: '#mouth'
-    }, '#adstractContainer', {
-      colorMode: true
-    });
-    gameFace.bind('load_complete', function(){
-      $('#imgAdjustFrame').removeClass('hide').siblings('.frame').addClass('hide');
-    }).bind('face_ready', function(){
-      $('#faceAdstractFrame').removeClass('hide').siblings('.frame').addClass('hide');
-    }).bind('face_complete', function(faceUrl){
-      $('#startFrame').removeClass('hide').siblings('.frame').addClass('hide');
-      $('.face', $charater).addClass('color-face').append('<img src="'+faceUrl+'" class="face-img" />');
-      pageType='hori';
-      $(window).trigger('resize');
-    });
-
-    $('.blank-face-btn').on(Helper.mouseStartEvent, function(e){
-      $('#startFrame').removeClass('hide').siblings('.frame').addClass('hide');
-      pageType='hori';
-      $(window).trigger('resize');
-    });
-    $('.select-face-btn').on('click', function(e){
-      $('#faceImg').click();
-    });
-    $('.retake-btn').on(Helper.mouseStartEvent, function(e){
-      $('#selectCharacterFrame').removeClass('hide').siblings('.frame').addClass('hide');
-    });
-    $('#imgAdjustFrame .submit-btn').on(Helper.mouseStartEvent, function(e){
-      gameFace.adjust();
-    });
-    $('.regetface-btn').on(Helper.mouseStartEvent, function(e){
-      $('#imgAdjustFrame').removeClass('hide').siblings('.frame').addClass('hide');
-    });
-    $('#faceAdstractFrame .submit-btn').on(Helper.mouseStartEvent, function(e){
-      gameFace.adstract();
-    });
-    // face end
   });
 });
