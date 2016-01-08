@@ -250,11 +250,11 @@ requirejs([
         switch(type){
           case 2:
             updateResult(++getPoint);
-            if(getPoint >= 5){
-              setTimeout(function(){
-                gameIsOver = true;
-              }, 200);
-            }
+            // if(getPoint >= 5){
+            //   setTimeout(function(){
+            //     gameIsOver = true;
+            //   }, 200);
+            // }
             break;
           case 1:
           default:
