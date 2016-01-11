@@ -1,5 +1,7 @@
 requirejs([
   'jquery',
+  'jquery.event.move',
+  'jquery.event.swipe',
   'helper',
   'timeline',
   'path',
@@ -7,6 +9,8 @@ requirejs([
   'img_storage'
 ], function(
   $,
+  jqmove,
+  jqswipe,
   Helper,
   TimeLine,
   Path,
@@ -437,6 +441,21 @@ requirejs([
       return false;
     });
     $('#slideBtn').on(Helper.mouseStartEvent, function(e){
+      e.preventDefault();
+      if(myCharater.line=='normal'){
+        myCharater.action('ground');
+        clearTimeout(myCharater.actionTimer);
+        myCharater.actionTimer=setTimeout(function(){
+          myCharater.action('normal');
+        }, 800);
+      }
+      return false;
+    });
+    $('#viewport').on('swipeup', function(e){
+      e.preventDefault();
+      myCharater.action('air');
+      return false;
+    }).on('swipedown', function(e){
       e.preventDefault();
       if(myCharater.line=='normal'){
         myCharater.action('ground');
