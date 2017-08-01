@@ -1,64 +1,44 @@
 define([
   'request_frame',
   'event',
-  'helper'
+  'helper',
+  'jquery'
 ], function(
   w,
   EV,
-  Helper
+  Helper,
+  $
 ){
   var Charater=function(el, timeline, option){
     var _this=this;
     _this.$el=$(el);
-    _this.character={};
     _this.$body=$('.body', _this.$el);
     _this.line='normal';
     _this.timeline=timeline;
     _this.option=$.extend({
-      speedMax: 0.4,
-      accelerate: 0.1,
+      speedMax: 0.8,
+      accelerate: 0.8,
       hitPoint: 250
     }, option || {});
-    _this.$el.each(function(i, c){
-      var $c = $(c);
-      _this.character[$c.data('action')] = $c;
-    });
-    _this.chracterTypeList = ['a', 'b', 'c'];
     _this.zoom=_this.option.zoom;
-    _this.vY0=450;
-    _this.g=800;
+    _this.vY0=650;
+    _this.g=1300;
     _this.speed=0;
     _this.actionTimer=0;
-
-    _this.y=0;
-    _this.yOrigin = _this.option.yOrigin || 320;
-
-    if(_this.option.debug){
-      _this.$hitRect=$('<div class="hit-rect"></div>').css({
-        'position': 'absolute'
-      });
-      _this.$hitRect.prependTo(_this.$el);
-    }
-  };
-
-  Charater.prototype.setCharacterType= function(type){
-    var _this=this,
-      characterImg;
-    $.each(_this.character, function(action, $c){
-      if(characterImg = _this.option[action+'Img']){
-        $c.find('.body').css({
-          'background-image': 'url('+ characterImg.img[type] +')'
+    _this.cBodyList={};
+    $.each(_this.option, function(key, val){
+      var $cBody;
+      if(val.img && val.hitRect){
+        $cBody = $('<div class="c-body"></div>').css({
+          'background-image': 'url('+ val.img +')',
+          'visibility': 'hidden'
         });
+        $cBody.appendTo(_this.$body);
+        _this.cBodyList[key.replace('Img', '')] = $cBody;
       }
     });
-  };
 
-  Charater.prototype.reset = function(){
-    var _this =this;
-    _this.speed=0;
-    _this.startSpeedUpTime=null;
-    _this.isUppingSpeed=false;
-    _this.line='normal';
+    _this.y=0;
   };
 
   Charater.prototype.startSpeedUp=function(){
@@ -118,6 +98,11 @@ define([
       charaterClassName='hit';
       charaterImg=_this.option.hitImg;
       _this.fallDown();
+      if(_this.line=='ground'){
+        y=-57;
+      }else{
+        y-=57;
+      }
     }else{
       switch(type){
         case 'air':
@@ -129,27 +114,26 @@ define([
           charaterClassName='slide';
           currentStatus='slide';
           charaterImg=_this.option.slideImg;
-          y+=50;
+          y-=10;
           break;
         case 'hit':
           charaterClassName='hit';
           currentStatus='hit';
           charaterImg=_this.option.hitImg;
-          y+=50;
           break;
         case 'normal':
           // go on
         default:
           switch(true){
-            case _this.speed>0.3:
+            case _this.speed>0.4:
               charaterClassName='run';
               currentStatus='run';
               charaterImg=_this.option.runImg;
               rotate=15;
-              // y=32;
-              // x=48;
+              y=32;
+              x=48;
               break;
-            case _this.speed>0 && _this.speed<=0.3:
+            case _this.speed>0 && _this.speed<=0.4:
               charaterClassName='walk';
               currentStatus='walk';
               charaterImg=_this.option.walkImg;
@@ -163,37 +147,28 @@ define([
     }
     _this.hitRect={
       x: (_this.option.hitPoint-charaterImg.width + charaterImg.hitRect.offsetX) * _this.zoom,
-      y: (_this.yOrigin - y + charaterImg.hitRect.offsetY) * _this.zoom,
+      y: (320-y + charaterImg.hitRect.offsetY) * _this.zoom,
       w: charaterImg.hitRect.w * _this.zoom,
       h: charaterImg.hitRect.h * _this.zoom
     };
-    if(_this.option.debug){
-      _this.$hitRect.css({
-        width: charaterImg.hitRect.w + 'px',
-        height: charaterImg.hitRect.h + 'px',
-        top: charaterImg.hitRect.offsetY + 'px',
-        left: charaterImg.hitRect.offsetX + 'px'
-      });
-    }
-    _this.character[charaterClassName].css({
-        '-webkit-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(_this.yOrigin - y)+'px, 0px) rotate('+rotate+'deg)'
-      });
-    if(_this.lastStatus != currentStatus){
-      $.each(_this.character, function(name, c){
-        if(name == charaterClassName){
-          $(c).removeClass('hidden');
-        }else{
-          $(c).addClass('hidden');
-        }
-      });
-      if(_this.option.$shadow){
-        _this.option.$shadow.css({
-          width: charaterImg.hitRect.w + 'px',
-          left: _this.option.hitPoint - charaterImg.width + charaterImg.hitRect.offsetX + 'px'
-        });
+    $.each(_this.cBodyList, function(name, $cBody){
+      if(name == charaterClassName){
+        $cBody.css('visibility', 'visible');
+      }else{
+        $cBody.css('visibility', 'hidden');
       }
-      _this.lastStatus = currentStatus;
-    }
+    });
+    _this.$el
+      .removeClass('jump slide hit run walk stand')
+      .addClass(charaterClassName)
+      .css({
+        '-webkit-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        '-moz-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        '-o-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        '-ms-transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)',
+        'transform':'scale('+_this.zoom+') translate3d('+(_this.option.hitPoint-charaterImg.width + x)+'px, '+(320-y)+'px, 0px) rotate('+rotate+'deg)'
+      });
+    charaterImg.step++;
   };
 
   Charater.prototype.drawHit=function(){
