@@ -3,15 +3,15 @@ An system that can make a linear running game in javascript
 
 and it's just begin...
 
-#线性游戏
+# 线性游戏
 
-##构成
+## 构成
 
 - 时间轴`timeline.js`
 - 随时间轴运动的“路径”`path.js`
 - 可控制的“人物”`charater.js`
 
-###时间轴
+### 时间轴
 
 使用`timestamp`获取开始到现在经过的时间
 
@@ -19,7 +19,7 @@ and it's just begin...
 
 对于不支持`window.requestAnimationFrame`的浏览器，用`setTimeout`作退化处理，具体见`request_frame.js`
 
-###路径
+### 路径
 
 提供`draw`方法绘画特定位移的路径场景
 
@@ -27,7 +27,7 @@ and it's just begin...
 
 `checkHit`方法判断节点与人物是否有碰撞
 
-###人物
+### 人物
 
 拥有`speed`属性决定场景的运动速度，单位为像素/毫秒
 
@@ -36,7 +36,7 @@ and it's just begin...
 ---
 
 
-##整合(demo.js)
+## 整合(demo.js)
 
 使用同一时间轴，实例化一个`TimeLine`
 
@@ -69,7 +69,7 @@ and it's just begin...
 
 问题：机率只决定每次判断是否插入的概率，但可能在两个node之间会有多次插入的操作，所以在下一个node是会插入的期望值跟此机率不一样，应该为`1 - (1 - 单次插入机率) ^ n`，n为两个node之间插入操作的调用次数
 
-###碰撞判断
+### 碰撞判断
 
 初期使用canvas实现路径和人物渲染时，把路径和人物分在两个独立的canvas绘画，每次更新场景的时候判断两个canvas有没有同时`alpha`值不为`0`的像素，有则为有碰撞
 
@@ -79,7 +79,7 @@ demo: [http://junewu.work/game/5/demo.html](http://junewu.work/game/5/demo.html)
 
 使用人物占有的矩形区域与node的矩形区域简单作是否重叠的判断，但在此demo中此方法得出的碰撞机率太大，于是使用人物矩形区域中心点与node矩形区域的中心点作距离判断，若距离小于人物矩形区域的`(宽 + 高)/4`加上node矩形区域的`(宽 + 高)/4`则视为发生碰撞
 
-###一些优化
+### 一些优化
 
 因为android 4.4.2下webview中的canvas没有使用硬件加速，使得demo基本不可用，所以把canvas表现的元件全部转为用html dom
 
